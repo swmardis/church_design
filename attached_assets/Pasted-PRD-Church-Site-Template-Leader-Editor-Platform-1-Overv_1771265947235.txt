@@ -1,0 +1,502 @@
+PRD — Church Site Template + Leader Editor Platform
+1. Overview
+
+Build a reusable church website template system with a custom leader editing portal.
+
+The system allows non-technical church leaders to log in and update all content (text, images, links, colors, logos, headers, etc.) across five fixed pages:
+
+Home
+
+Events
+
+Next Steps
+
+About
+
+Contact
+
+The public site layout and component order are fixed and cannot be changed by leaders.
+Leaders may edit any content fields but cannot move, remove, or reorder components.
+
+The platform must be reusable across multiple churches with identical structure and editor experience.
+
+2. Goals
+Primary Goals
+
+Leaders can update site content without coding knowledge.
+
+Layout consistency is enforced across all churches.
+
+Editors never access WordPress admin or any CMS admin UI.
+
+Editing feels modern, simple, and safe.
+
+System can be installed and reused across many church sites.
+
+Planning Center events integrate natively (no embeds).
+
+Non-Goals
+
+Drag-and-drop page builder.
+
+Component reordering.
+
+Arbitrary page creation by leaders.
+
+Free-form layout editing.
+
+3. User Roles
+church_admin
+
+Full access to all pages and theme settings
+
+Configure Planning Center integration
+
+Manage users
+
+Upload media
+
+church_editor
+
+Edit page content
+
+Upload media
+
+Edit events display settings
+
+church_media
+
+Upload/manage media only
+
+4. Site Structure (Fixed)
+
+All church sites contain exactly these pages:
+
+Home
+
+Events
+
+Next Steps
+
+About
+
+Contact
+
+Navigation labels are editable text, but page destinations are fixed.
+
+5. Editing Model
+Key Rule
+
+All components exist in fixed order defined by templates.
+Editors can modify any field but cannot:
+
+reorder sections
+
+delete sections
+
+add new sections
+
+change layout structure
+
+6. Theme Settings (Global Editable)
+
+Editable across entire site:
+
+Header logo
+
+Footer logo
+
+Primary color
+
+Secondary color
+
+Font selection (limited predefined options)
+
+Navigation labels
+
+Header CTA button text + URL
+
+Social links
+
+Footer contact info
+
+7. Page Content Requirements
+7.1 Home Page
+
+Sections (fixed order):
+
+Hero
+
+Background image
+
+Title
+
+Subtitle
+
+Primary button (text + URL)
+
+Secondary button (text + URL)
+
+Weekly Schedule Block
+
+Image
+
+Title
+
+Description text
+
+Featured Cards (3 fixed cards)
+Each card:
+
+Image/icon
+
+Title
+
+Body
+
+Button text
+
+Button URL
+
+Gallery Strip
+
+Album selector
+
+7.2 Events Page
+
+Two possible sources:
+
+Planning Center events (primary)
+
+Optional manual events (fallback)
+
+Fields:
+
+Section title
+
+Section intro text
+
+Display mode:
+
+list
+
+grouped by tag
+
+Tag filter selection
+
+Event limit
+
+Show past toggle
+
+Manual event fields (if enabled):
+
+Title
+
+Date
+
+Time
+
+Location
+
+Description
+
+Image
+
+Button text
+
+Button URL
+
+7.3 Next Steps Page
+
+Steps list (fixed order cards):
+
+Each card:
+
+Image/icon
+
+Title
+
+Description
+
+Button text
+
+Button URL
+
+7.4 About Page
+
+Sections:
+
+Intro section
+
+Title
+
+Body
+
+Image
+
+What to Expect
+
+Title
+
+Body
+
+Image
+
+Leaders
+Leader cards list:
+
+Photo
+
+Name
+
+Role
+
+Optional social links
+
+7.5 Contact Page
+
+Fields:
+
+Address
+
+Email
+
+Phone
+
+Map link
+
+Service times text
+
+Form embed code (optional)
+
+Contact section image
+
+8. Media Management
+
+Leaders can:
+
+Upload images via drag/drop
+
+Create albums
+
+Reorder images within album
+
+Delete images
+
+Replace images
+
+Add captions
+
+Images stored centrally and referenced by ID.
+
+9. Planning Center Integration
+
+System must integrate natively with Planning Center Registrations.
+
+Requirements
+
+Server-side API connection
+
+Credentials stored securely
+
+Fetch registrations/events
+
+Filter by selected tag IDs
+
+Cache results
+
+Provide normalized event data endpoint
+
+Refresh button in admin
+
+Fallback to cached data if API unavailable
+
+Admin Fields
+
+Planning Center API credentials
+
+Tag selection
+
+Grouping mode
+
+Limit
+
+Future events only toggle
+
+10. Leader Portal (Editor UI)
+
+Accessible at:
+
+/leader/login
+/leader/dashboard
+/leader/home
+/leader/events
+/leader/next-steps
+/leader/about
+/leader/contact
+/leader/media
+/leader/settings
+
+UI Requirements
+
+Built using shadcn components
+
+Clean left navigation
+
+Page preview thumbnail
+
+Section forms
+
+Image pickers
+
+Save + Publish
+
+Preview link
+
+Success/error toasts
+
+Loading states
+
+Role-based visibility
+
+11. Public Site Rendering
+
+Public pages render from stored content model.
+
+Requirements:
+
+Fast load
+
+SEO-friendly markup
+
+Responsive layout
+
+Consistent component structure
+
+Theme settings applied globally
+
+Events rendered from Planning Center data
+
+12. Multi-Church Capability
+
+System must support multiple churches with:
+
+separate content
+
+separate media
+
+separate theme settings
+
+separate Planning Center credentials
+
+separate users/roles
+
+13. Security
+
+Authenticated editing only
+
+Role-based permissions
+
+Server-side validation
+
+No client-side secret exposure
+
+Media upload restrictions
+
+CSRF protection
+
+Sanitization of all HTML inputs
+
+14. Performance & Caching
+
+Public pages cacheable
+
+Leader portal non-cacheable
+
+Planning Center data cached
+
+Media optimized
+
+Lazy image loading
+
+15. Installation & Reuse
+
+System must be deployable repeatedly across churches with identical structure.
+
+Setup flow:
+
+Install platform
+
+Configure church name/logo/colors
+
+Connect Planning Center
+
+Create admin user
+
+Publish
+
+16. Success Criteria
+
+Leaders can:
+
+Log in
+
+Replace hero image
+
+Change any text
+
+Update events via PCO
+
+Upload gallery photos
+
+Edit Next Steps cards
+
+Edit About leaders
+
+Update contact info
+
+Publish safely
+
+Without:
+
+touching layout
+
+breaking design
+
+accessing CMS admin
+
+17. UI Library Requirement
+
+All editor UI must use shadcn components for:
+
+forms
+
+buttons
+
+inputs
+
+modals
+
+tabs
+
+cards
+
+toasts
+
+layout
+
+18. Deliverables
+
+Public site templates
+
+Leader portal UI
+
+Content model
+
+Planning Center integration
+
+Media system
+
+Theme settings
+
+Multi-church support
