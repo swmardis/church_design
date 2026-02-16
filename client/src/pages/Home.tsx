@@ -131,7 +131,7 @@ export default function Home() {
               <p className="text-lg text-muted-foreground leading-relaxed">{schedule.description}</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {schedule.times.map((t: any, i: number) => (
+                {schedule.times?.map((t: any, i: number) => (
                   <div key={i} className="flex items-center gap-4 bg-background p-4 rounded-xl shadow-sm border border-border/50">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                       <Clock className="w-6 h-6" />

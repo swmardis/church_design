@@ -184,7 +184,11 @@ async function seedDatabase() {
     await storage.updateSectionSafe("home", "schedule", {
       title: "Weekly Schedule",
       description: "Join us every Sunday at 9:00 AM and 11:00 AM. We also have youth groups on Wednesdays.",
-      image: "https://images.unsplash.com/photo-1510590337019-5ef8d3d32116?auto=format&fit=crop&q=80"
+      image: "https://images.unsplash.com/photo-1510590337019-5ef8d3d32116?auto=format&fit=crop&q=80",
+      times: [
+        { label: "Classic Service", time: "9:00 AM" },
+        { label: "Modern Service", time: "11:00 AM" }
+      ]
     });
     
     await storage.updateSectionSafe("home", "featured", {
