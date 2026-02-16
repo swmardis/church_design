@@ -19,7 +19,10 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: "/leader/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/leader/home", icon: FileText, label: "Pages" },
+    { href: "/leader/home", icon: FileText, label: "Home" },
+    { href: "/leader/about", icon: FileText, label: "About" },
+    { href: "/leader/next-steps", icon: FileText, label: "Next Steps" },
+    { href: "/leader/contact", icon: FileText, label: "Contact" },
     { href: "/leader/events", icon: Calendar, label: "Events" },
     { href: "/leader/media", icon: Image, label: "Media" },
     { href: "/leader/settings", icon: Settings, label: "Settings" },

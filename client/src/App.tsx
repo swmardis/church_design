@@ -8,6 +8,9 @@ import NotFound from "@/pages/not-found";
 // Public Pages
 import Home from "@/pages/Home";
 import Events from "@/pages/Events";
+import About from "@/pages/About";
+import NextSteps from "@/pages/NextSteps";
+import Contact from "@/pages/Contact";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 
@@ -16,6 +19,10 @@ import LeaderDashboard from "@/pages/leader/LeaderDashboard";
 import LeaderEvents from "@/pages/leader/LeaderEvents";
 import LeaderMedia from "@/pages/leader/LeaderMedia";
 import LeaderHomeEdit from "@/pages/leader/LeaderHomeEdit";
+import LeaderAbout from "@/pages/leader/LeaderAbout";
+import LeaderNextSteps from "@/pages/leader/LeaderNextSteps";
+import LeaderContact from "@/pages/leader/LeaderContact";
+import LeaderSettings from "@/pages/leader/LeaderSettings";
 import { LeaderLayout } from "@/components/LeaderLayout";
 
 // Wrapper for public pages (adds Nav + Footer)
@@ -41,7 +48,10 @@ function Router() {
           <Route path="/leader/events" component={LeaderEvents} />
           <Route path="/leader/media" component={LeaderMedia} />
           <Route path="/leader/home" component={LeaderHomeEdit} />
-          {/* Add other leader routes here */}
+          <Route path="/leader/about" component={LeaderAbout} />
+          <Route path="/leader/next-steps" component={LeaderNextSteps} />
+          <Route path="/leader/contact" component={LeaderContact} />
+          <Route path="/leader/settings" component={LeaderSettings} />
           <Route component={NotFound} />
         </Switch>
       </LeaderLayout>
@@ -53,10 +63,9 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/events" component={Events} />
-        {/* Placeholder pages for routes not fully implemented yet but linked */}
-        <Route path="/about" component={() => <div className="p-20 text-center font-display text-2xl">About Page Coming Soon</div>} />
-        <Route path="/contact" component={() => <div className="p-20 text-center font-display text-2xl">Contact Page Coming Soon</div>} />
-        <Route path="/next-steps" component={() => <div className="p-20 text-center font-display text-2xl">Next Steps Page Coming Soon</div>} />
+        <Route path="/about" component={About} />
+        <Route path="/next-steps" component={NextSteps} />
+        <Route path="/contact" component={Contact} />
         <Route component={NotFound} />
       </Switch>
     </PublicLayout>

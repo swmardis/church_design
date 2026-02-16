@@ -199,6 +199,52 @@ async function seedDatabase() {
       ]
     });
   }
+
+  // Seed About Page
+  const aboutSections = await storage.getSectionsByPage("about");
+  if (aboutSections.length === 0) {
+    await storage.updateSectionSafe("about", "intro", {
+      title: "Who We Are",
+      body: "We are a community of believers passionate about sharing the love of Christ. Our mission is to love God, love people, and make disciples.",
+      imageUrl: "https://images.unsplash.com/photo-1510590337019-5ef8d3d32116?auto=format&fit=crop&q=80"
+    });
+    
+    await storage.updateSectionSafe("about", "values", {
+      title: "What to Expect",
+      body: "Join us for a time of worship, teaching, and fellowship. Come as you are! We have programs for kids, youth, and adults.",
+      imageUrl: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&q=80"
+    });
+    
+    await storage.updateSectionSafe("about", "team", {
+      leaders: [
+        { name: "Pastor John Doe", role: "Lead Pastor", imageUrl: "" },
+        { name: "Jane Smith", role: "Worship Leader", imageUrl: "" }
+      ]
+    });
+  }
+
+  // Seed Next Steps Page
+  const nextStepsSections = await storage.getSectionsByPage("next-steps");
+  if (nextStepsSections.length === 0) {
+    await storage.updateSectionSafe("next-steps", "steps", {
+      list: [
+        { title: "Attend a Service", description: "Join us this Sunday at 9AM or 11AM.", buttonText: "Plan Your Visit", buttonUrl: "/", imageUrl: "" },
+        { title: "Join a Group", description: "Find community and grow together in a small group.", buttonText: "Find a Group", buttonUrl: "/events", imageUrl: "" },
+        { title: "Start Serving", description: "Make a difference by joining a volunteer team.", buttonText: "Join a Team", buttonUrl: "/contact", imageUrl: "" }
+      ]
+    });
+  }
+
+  // Seed Contact Page
+  const contactSections = await storage.getSectionsByPage("contact");
+  if (contactSections.length === 0) {
+    await storage.updateSectionSafe("contact", "info", {
+      address: "123 Main St, Anytown, USA",
+      email: "info@church.com",
+      phone: "(555) 123-4567",
+      serviceTimes: "Sundays at 9:00 AM & 11:00 AM"
+    });
+  }
   
   const settings = await storage.getSettings();
   if (settings.length === 0) {
