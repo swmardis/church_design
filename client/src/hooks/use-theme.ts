@@ -5,33 +5,29 @@ export function useTheme() {
   const { data: settings } = useSettings();
 
   useEffect(() => {
-    if (!settings) return;
+    if (!settings || !Array.isArray(settings)) return;
 
-    const root = document.documentElement;
-    
-    // Helper to set CSS variable if value exists
-    const setVar = (key: string, cssVar: string) => {
-      const setting = settings.find(s => s.key === key);
-      if (setting?.value) {
-        root.style.setProperty(cssVar, String(setting.value));
-      }
+    const getVal = (key: string) => {
+      const s = settings.find((s: any) => s.key === key);
+      return s ? String(s.value) : null;
     };
 
-    setVar('primary_color', '--primary');
-    setVar('secondary_color', '--secondary');
-    
-    // New Theme Variables
-    setVar('menu_bg_color', '--menu-bg');
-    setVar('menu_text_color', '--menu-text');
-    setVar('site_bg_color', '--site-bg');
-    setVar('site_text_color', '--site-text');
-    
-    // Fonts
-    const fontSetting = settings.find(s => s.key === 'site_font');
-    if (fontSetting?.value) {
-      root.style.setProperty('--font-sans', String(fontSetting.value));
-      root.style.setProperty('--font-display', String(fontSetting.value)); // Simplified for now
-    }
+    const root = document.documentElement;
 
+    const menuBg = getVal('menu_bg_color');
+    const menuText = getVal('menu_text_color');
+    const siteBg = getVal('site_bg_color');
+    const siteText = getVal('site_text_color');
+    const fontFamily = getVal('font_family');
+
+    if (menuBg) root.style.setProperty('--menu-bg', menuBg);
+    if (menuText) root.style.setProperty('--menu-text', menuText);
+    if (siteBg) root.style.setProperty('--site-bg', siteBg);
+    if (siteText) root.style.setProperty('--site-text', siteText);
+
+    if (fontFamily) {
+      root.style.setProperty('--font-sans', `'${fontFamily}', sans-serif`);
+      root.style.setProperty('--font-display', `'${fontFamily}', sans-serif`);
+    }
   }, [settings]);
 }

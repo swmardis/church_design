@@ -296,16 +296,15 @@ async function seedDatabase() {
   if (settings.length === 0) {
     await storage.updateSettings([
       { key: "site_name", value: "Grace Community Church" },
-      { key: "primary_color", value: "hsl(222.2 47.4% 11.2%)" },
-      { key: "secondary_color", value: "hsl(210 40% 96.1%)" },
+      { key: "primary_color", value: "#1e293b" },
+      { key: "secondary_color", value: "#f1f5f9" },
       { key: "contact_email", value: "info@church.com" },
       { key: "contact_phone", value: "(555) 123-4567" },
       { key: "contact_address", value: "123 Main St, Anytown, USA" },
-      // New Settings
-      { key: "menu_bg_color", value: "hsl(0 0% 100%)" },
-      { key: "menu_text_color", value: "hsl(222.2 47.4% 11.2%)" },
-      { key: "site_bg_color", value: "hsl(0 0% 100%)" },
-      { key: "site_text_color", value: "hsl(222.2 47.4% 11.2%)" },
+      { key: "menu_bg_color", value: "#ffffff" },
+      { key: "menu_text_color", value: "#1e293b" },
+      { key: "site_bg_color", value: "#ffffff" },
+      { key: "site_text_color", value: "#1e293b" },
       { key: "font_family", value: "Inter" },
     ]);
   }
