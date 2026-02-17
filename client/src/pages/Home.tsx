@@ -81,7 +81,12 @@ export default function Home() {
           <div className="animate-in-up">
             {hero.useLogo && hero.logoImage ? (
               <div className="mb-6 flex justify-center">
-                <img src={hero.logoImage} alt="Logo" className="max-h-40 md:max-h-56 lg:max-h-64 w-auto object-contain drop-shadow-lg" />
+                <img
+                  src={hero.logoImage}
+                  alt="Logo"
+                  className="w-auto object-contain drop-shadow-lg"
+                  style={{ maxHeight: `${Math.round(((hero.logoSize ?? 50) / 100) * 400)}px` }}
+                />
               </div>
             ) : (
               <h1 className="font-display font-bold text-5xl md:text-7xl lg:text-8xl text-white mb-6 drop-shadow-lg leading-tight text-balance">

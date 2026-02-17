@@ -8,6 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MediaPicker } from "@/components/MediaPicker";
+import { Slider } from "@/components/ui/slider";
 import { Loader2, Plus, Trash2, GripVertical } from "lucide-react";
 import { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -88,8 +89,8 @@ export default function LeaderHomeEdit() {
 }
 
 function HeroForm({ defaultValues, onSubmit }: any) {
-  const form = useForm({ defaultValues: { ...defaultValues, useLogo: defaultValues.useLogo || false, logoImage: defaultValues.logoImage || "" } });
-  useEffect(() => { form.reset({ ...defaultValues, useLogo: defaultValues.useLogo || false, logoImage: defaultValues.logoImage || "" }); }, [defaultValues, form]);
+  const form = useForm({ defaultValues: { ...defaultValues, useLogo: defaultValues.useLogo || false, logoImage: defaultValues.logoImage || "", logoSize: defaultValues.logoSize ?? 50 } });
+  useEffect(() => { form.reset({ ...defaultValues, useLogo: defaultValues.useLogo || false, logoImage: defaultValues.logoImage || "", logoSize: defaultValues.logoSize ?? 50 }); }, [defaultValues, form]);
 
   const useLogo = form.watch("useLogo");
 
@@ -112,9 +113,30 @@ function HeroForm({ defaultValues, onSubmit }: any) {
             )} />
 
             {useLogo ? (
-              <FormField control={form.control} name="logoImage" render={({ field }) => (
-                <FormItem><FormLabel>Hero Logo Image</FormLabel><FormControl><MediaPicker value={field.value} onSelect={field.onChange} /></FormControl></FormItem>
-              )} />
+              <>
+                <FormField control={form.control} name="logoImage" render={({ field }) => (
+                  <FormItem><FormLabel>Hero Logo Image</FormLabel><FormControl><MediaPicker value={field.value} onSelect={field.onChange} /></FormControl></FormItem>
+                )} />
+                <FormField control={form.control} name="logoSize" render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between gap-2">
+                      <FormLabel>Logo Size</FormLabel>
+                      <span className="text-sm text-muted-foreground">{field.value}%</span>
+                    </div>
+                    <FormControl>
+                      <Slider
+                        min={20}
+                        max={100}
+                        step={5}
+                        value={[field.value]}
+                        onValueChange={([v]) => field.onChange(v)}
+                        data-testid="slider-logo-size"
+                      />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">Drag to adjust how large the logo appears in the hero section</p>
+                  </FormItem>
+                )} />
+              </>
             ) : (
               <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
