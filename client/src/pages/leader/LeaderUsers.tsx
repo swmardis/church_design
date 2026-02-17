@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Plus, UserCheck, UserX, Shield, Clock, Users, Trash2 } from "lucide-react";
 import type { User } from "@shared/models/auth";
+import { wpApiUrl, wpHeaders } from "@/lib/wp";
 
 const addUserSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -47,7 +48,7 @@ export default function LeaderUsers() {
   const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
     queryFn: async () => {
-      const res = await fetch("/api/admin/users", { credentials: "include" });
+      const res = await fetch(wpApiUrl("/admin/users"), { headers: wpHeaders(), credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch users");
       return res.json();
     },
@@ -55,9 +56,9 @@ export default function LeaderUsers() {
 
   const updateRole = useMutation({
     mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      const res = await fetch(`/api/admin/users/${id}/role`, {
+      const res = await fetch(wpApiUrl(`/admin/users/${id}/role`), {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: wpHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ role }),
         credentials: "include",
       });
@@ -75,9 +76,9 @@ export default function LeaderUsers() {
 
   const createUser = useMutation({
     mutationFn: async (data: AddUserForm) => {
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch(wpApiUrl("/admin/users"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: wpHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(data),
         credentials: "include",
       });
@@ -110,7 +111,7 @@ export default function LeaderUsers() {
 
   const deleteUser = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/users/${id}`, {
+      const res = await fetch(wpApiUrl(`/admin/users/${id}`), {
         method: "DELETE",
         credentials: "include",
       });

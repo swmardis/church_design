@@ -40,13 +40,14 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
 function Router() {
   const [location] = useLocation();
-  const isLeaderRoute = location.startsWith("/leader");
+  const isLeaderRoute = location.startsWith("/leader") || location.startsWith("/admin");
 
   if (isLeaderRoute) {
     return (
       <LeaderLayout>
         <Switch>
           <Route path="/leader/dashboard" component={LeaderDashboard} />
+          <Route path="/admin/dashboard" component={LeaderDashboard} />
           <Route path="/leader/events" component={LeaderEvents} />
           <Route path="/leader/media" component={LeaderMedia} />
           <Route path="/leader/home" component={LeaderHomeEdit} />

@@ -28,8 +28,9 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: process.env.WP_PLUGIN_OUTDIR ? path.resolve(import.meta.dirname, process.env.WP_PLUGIN_OUTDIR) : path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    manifest: true,
   },
   server: {
     fs: {

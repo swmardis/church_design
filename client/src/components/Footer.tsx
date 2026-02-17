@@ -97,7 +97,7 @@ export function Footer() {
         <div className="border-t border-slate-800 mt-16 pt-8 text-center text-xs text-slate-500">
           <p>&copy; {new Date().getFullYear()} {siteName}. All rights reserved.</p>
           <div className="mt-2">
-            <Link href="/leader/dashboard" className="hover:text-slate-300 transition-colors" data-testid="link-leader-portal">Leader Portal</Link>
+            <Link href="/admin/dashboard" className="hover:text-slate-300 transition-colors" data-testid="link-leader-portal">Leader Portal</Link>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@shared/routes";
+import { wpApiUrl, wpHeaders } from "@/lib/wp";
 
 export function useSettings() {
   return useQuery({
@@ -11,9 +12,9 @@ export function useUpdateSettings() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (settingsArray: { key: string; value: any }[]) => {
-      const res = await fetch(api.settings.update.path, {
+      const res = await fetch(wpApiUrl(api.settings.update.path), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: wpHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(settingsArray),
         credentials: "include",
       });
