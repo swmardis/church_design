@@ -26,7 +26,7 @@ export function Navigation() {
           href="/"
           className="font-display text-2xl font-bold tracking-tight text-primary"
         >
-          New Life<span className="text-foreground">Students</span>
+          New Life<span className="text-foreground text-left pl-[0px] pr-[0px] ml-[5px] mr-[5px]">Students</span>
         </Link>
 
         {/* Desktop Nav */}
