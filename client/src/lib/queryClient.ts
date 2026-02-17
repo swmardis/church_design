@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { wpApiUrl, wpHeaders } from "@/lib/wp";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -14,7 +15,7 @@ export async function apiRequest(
 ): Promise<Response> {
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers: data ? wpHeaders({ "Content-Type": "application/json" }) : wpHeaders(),
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -29,7 +30,8 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
+    const res = await fetch(wpApiUrl(queryKey.join("/") as string), {
+      headers: wpHeaders(),
       credentials: "include",
     });
 

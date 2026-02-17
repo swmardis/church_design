@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
+import { wpApiUrl, wpHeaders } from "@/lib/wp";
 
 export function useMedia() {
   return useQuery({
     queryKey: [api.media.list.path],
     queryFn: async () => {
-      const res = await fetch(api.media.list.path);
+      const res = await fetch(wpApiUrl(api.media.list.path), { headers: wpHeaders() });
       if (!res.ok) throw new Error("Failed to fetch media");
       const data = await res.json();
       return api.media.list.responses[200].parse(data.map((m: any) => ({
@@ -23,7 +24,8 @@ export function useUploadMedia() {
       const formData = new FormData();
       formData.append('file', file);
       
-      const res = await fetch(api.media.upload.path, {
+      const res = await fetch(wpApiUrl(api.media.upload.path), {
+        headers: wpHeaders(),
         method: "POST",
         body: formData,
         credentials: "include",
@@ -45,7 +47,7 @@ export function useDeleteMedia() {
   return useMutation({
     mutationFn: async (id: number) => {
       const url = buildUrl(api.media.delete.path, { id });
-      const res = await fetch(url, { 
+      const res = await fetch(wpApiUrl(url), {
         method: "DELETE",
         credentials: "include" 
       });

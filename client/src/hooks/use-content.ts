@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl, type Section } from "@shared/routes";
+import { wpApiUrl, wpHeaders } from "@/lib/wp";
 
 // === Content Hooks ===
 
@@ -8,7 +9,7 @@ export function usePageContent(pageSlug: string) {
     queryKey: [api.content.getPage.path, pageSlug],
     queryFn: async () => {
       const url = buildUrl(api.content.getPage.path, { page: pageSlug });
-      const res = await fetch(url);
+      const res = await fetch(wpApiUrl(url), { headers: wpHeaders() });
       if (res.status === 404) return []; // Return empty array if not found, let UI handle defaults
       if (!res.ok) throw new Error("Failed to fetch page content");
       return api.content.getPage.responses[200].parse(await res.json());
@@ -22,9 +23,9 @@ export function useUpdateSection() {
   return useMutation({
     mutationFn: async ({ pageSlug, sectionKey, content }: { pageSlug: string, sectionKey: string, content: any }) => {
       const url = buildUrl(api.content.updateSection.path, { page: pageSlug, sectionKey });
-      const res = await fetch(url, {
+      const res = await fetch(wpApiUrl(url), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: wpHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ content }),
         credentials: "include",
       });

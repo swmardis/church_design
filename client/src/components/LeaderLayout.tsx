@@ -16,7 +16,7 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
   if (isLoading) return null;
 
   if (!user) {
-    window.location.href = "/api/login";
+    window.location.href = "/admin/login";
     return null;
   }
 
