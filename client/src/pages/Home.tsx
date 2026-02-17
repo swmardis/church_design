@@ -79,9 +79,15 @@ export default function Home() {
         {/* Content */}
         <div className="container relative z-10 mx-auto px-4 text-center">
           <div className="animate-in-up">
-            <h1 className="font-display font-bold text-5xl md:text-7xl lg:text-8xl text-white mb-6 drop-shadow-lg leading-tight text-balance">
-              {hero.title}
-            </h1>
+            {hero.useLogo && hero.logoImage ? (
+              <div className="mb-6 flex justify-center">
+                <img src={hero.logoImage} alt="Logo" className="max-h-40 md:max-h-56 lg:max-h-64 w-auto object-contain drop-shadow-lg" />
+              </div>
+            ) : (
+              <h1 className="font-display font-bold text-5xl md:text-7xl lg:text-8xl text-white mb-6 drop-shadow-lg leading-tight text-balance">
+                {hero.title}
+              </h1>
+            )}
             <p className="text-xl md:text-2xl text-slate-200 mb-10 max-w-2xl mx-auto font-light leading-relaxed text-balance">
               {hero.subtitle}
             </p>

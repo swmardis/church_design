@@ -1,10 +1,11 @@
 import { useSettings, useUpdateSettings } from "@/hooks/use-settings";
+import { usePageContent, useUpdateSection, getSectionContent } from "@/hooks/use-content";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Plus, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MediaPicker } from "@/components/MediaPicker";
@@ -15,9 +16,21 @@ function getVal(settings: any[] | undefined, key: string, fallback = "") {
   return s ? s.value : fallback;
 }
 
+const SOCIAL_PLATFORMS = [
+  { value: "facebook", label: "Facebook" },
+  { value: "instagram", label: "Instagram" },
+  { value: "youtube", label: "YouTube" },
+  { value: "vimeo", label: "Vimeo" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "twitter", label: "X (Twitter)" },
+  { value: "linkedin", label: "LinkedIn" },
+];
+
 export default function LeaderSettings() {
   const { data: settings, isLoading } = useSettings();
   const updateSettings = useUpdateSettings();
+  const { data: globalSections } = usePageContent("global");
+  const updateSection = useUpdateSection();
   const { toast } = useToast();
   const [loaded, setLoaded] = useState(false);
 
@@ -34,6 +47,10 @@ export default function LeaderSettings() {
     header_logo: "",
     footer_logo: "",
   });
+
+  const socialData = getSectionContent(globalSections, "social_links", { links: [] });
+  const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string }[]>([]);
+  const [socialLoaded, setSocialLoaded] = useState(false);
 
   useEffect(() => {
     if (settings && !loaded) {
@@ -54,6 +71,13 @@ export default function LeaderSettings() {
     }
   }, [settings, loaded]);
 
+  useEffect(() => {
+    if (socialData?.links && !socialLoaded) {
+      setSocialLinks(socialData.links);
+      setSocialLoaded(true);
+    }
+  }, [socialData, socialLoaded]);
+
   const update = (key: string, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
   };
@@ -70,6 +94,28 @@ export default function LeaderSettings() {
     });
   };
 
+  const handleSaveSocial = () => {
+    updateSection.mutate(
+      { pageSlug: "global", sectionKey: "social_links", content: { links: socialLinks } },
+      {
+        onSuccess: () => toast({ title: "Saved", description: "Social links updated." }),
+        onError: () => toast({ title: "Error", description: "Failed to save social links.", variant: "destructive" }),
+      }
+    );
+  };
+
+  const addSocialLink = () => {
+    setSocialLinks(prev => [...prev, { platform: "facebook", url: "" }]);
+  };
+
+  const removeSocialLink = (index: number) => {
+    setSocialLinks(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateSocialLink = (index: number, field: string, value: string) => {
+    setSocialLinks(prev => prev.map((link, i) => i === index ? { ...link, [field]: value } : link));
+  };
+
   if (isLoading) {
     return (
       <div className="p-8 flex justify-center">
@@ -80,11 +126,11 @@ export default function LeaderSettings() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="font-display text-3xl font-bold" data-testid="text-settings-title">Global Settings</h1>
         <Button onClick={handleSave} disabled={updateSettings.isPending} data-testid="button-save-settings">
           {updateSettings.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-          Save All Settings
+          Save Settings
         </Button>
       </div>
 
@@ -93,19 +139,11 @@ export default function LeaderSettings() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Site Name</Label>
-            <Input
-              value={form.site_name}
-              onChange={(e) => update("site_name", e.target.value)}
-              data-testid="input-site-name"
-            />
+            <Input value={form.site_name} onChange={(e) => update("site_name", e.target.value)} data-testid="input-site-name" />
           </div>
           <div className="space-y-2">
             <Label>Contact Email</Label>
-            <Input
-              value={form.contact_email}
-              onChange={(e) => update("contact_email", e.target.value)}
-              data-testid="input-contact-email"
-            />
+            <Input value={form.contact_email} onChange={(e) => update("contact_email", e.target.value)} data-testid="input-contact-email" />
           </div>
         </CardContent>
       </Card>
@@ -115,28 +153,20 @@ export default function LeaderSettings() {
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label>Header Logo</Label>
-            <MediaPicker
-              value={form.header_logo}
-              onSelect={(url) => update("header_logo", url)}
-            />
+            <MediaPicker value={form.header_logo} onSelect={(url) => update("header_logo", url)} />
           </div>
           <div className="space-y-2">
             <Label>Footer Logo</Label>
-            <MediaPicker
-              value={form.footer_logo}
-              onSelect={(url) => update("footer_logo", url)}
-            />
+            <MediaPicker value={form.footer_logo} onSelect={(url) => update("footer_logo", url)} />
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader><CardTitle>Theme Colors</CardTitle></CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ColorField label="Primary Color" value={form.primary_color} onChange={(v) => update("primary_color", v)} testId="primary-color" />
-            <ColorField label="Secondary Color" value={form.secondary_color} onChange={(v) => update("secondary_color", v)} testId="secondary-color" />
-          </div>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ColorField label="Primary Color" value={form.primary_color} onChange={(v) => update("primary_color", v)} testId="primary-color" />
+          <ColorField label="Secondary Color" value={form.secondary_color} onChange={(v) => update("secondary_color", v)} testId="secondary-color" />
         </CardContent>
       </Card>
 
@@ -149,7 +179,6 @@ export default function LeaderSettings() {
             <ColorField label="Site Background" value={form.site_bg_color} onChange={(v) => update("site_bg_color", v)} testId="site-bg-color" />
             <ColorField label="Site Text Color" value={form.site_text_color} onChange={(v) => update("site_text_color", v)} testId="site-text-color" />
           </div>
-
           <div className="space-y-2">
             <Label>Font Family</Label>
             <Select value={form.font_family} onValueChange={(v) => update("font_family", v)}>
@@ -172,6 +201,60 @@ export default function LeaderSettings() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <CardTitle>Social Media Links</CardTitle>
+              <CardDescription>Add social media icons to the footer. Choose a platform and enter the URL.</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={addSocialLink} data-testid="button-add-social">
+              <Plus className="w-4 h-4 mr-2" /> Add Link
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {socialLinks.length === 0 && (
+            <p className="text-muted-foreground text-sm text-center py-4">No social links added yet. Click "Add Link" to get started.</p>
+          )}
+          {socialLinks.map((link, index) => (
+            <div key={index} className="flex items-end gap-3 bg-muted/20 p-3 rounded-lg border" data-testid={`social-link-row-${index}`}>
+              <div className="space-y-1 w-40 shrink-0">
+                <Label className="text-xs">Platform</Label>
+                <Select value={link.platform} onValueChange={(v) => updateSocialLink(index, "platform", v)}>
+                  <SelectTrigger data-testid={`select-social-platform-${index}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SOCIAL_PLATFORMS.map((p) => (
+                      <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1 flex-1">
+                <Label className="text-xs">URL</Label>
+                <Input
+                  value={link.url}
+                  onChange={(e) => updateSocialLink(index, "url", e.target.value)}
+                  placeholder="https://facebook.com/yourpage"
+                  data-testid={`input-social-url-${index}`}
+                />
+              </div>
+              <Button type="button" variant="ghost" size="icon" className="text-destructive shrink-0" onClick={() => removeSocialLink(index)} data-testid={`button-remove-social-${index}`}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          {socialLinks.length > 0 && (
+            <Button onClick={handleSaveSocial} disabled={updateSection.isPending} data-testid="button-save-social">
+              {updateSection.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              Save Social Links
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
       <Button onClick={handleSave} size="lg" className="w-full" disabled={updateSettings.isPending} data-testid="button-save-bottom">
         {updateSettings.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
         Save All Settings
@@ -182,20 +265,17 @@ export default function LeaderSettings() {
 
 function ColorField({ label, value, onChange, testId }: { label: string; value: string; onChange: (v: string) => void; testId: string }) {
   const safeHex = value.startsWith("#") ? value : "#000000";
-
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
       <div className="flex items-center gap-3">
-        <div className="relative">
-          <input
-            type="color"
-            value={safeHex}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-10 h-10 rounded-md border border-border cursor-pointer p-0.5"
-            data-testid={`color-picker-${testId}`}
-          />
-        </div>
+        <input
+          type="color"
+          value={safeHex}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-10 h-10 rounded-md border border-border cursor-pointer p-0.5"
+          data-testid={`color-picker-${testId}`}
+        />
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -203,10 +283,7 @@ function ColorField({ label, value, onChange, testId }: { label: string; value: 
           placeholder="#000000"
           data-testid={`input-${testId}`}
         />
-        <div
-          className="w-10 h-10 rounded-md border border-border shrink-0"
-          style={{ backgroundColor: safeHex }}
-        />
+        <div className="w-10 h-10 rounded-md border border-border shrink-0" style={{ backgroundColor: safeHex }} />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MediaPicker } from "@/components/MediaPicker";
 import { Loader2, Plus, Trash2, GripVertical } from "lucide-react";
@@ -87,8 +88,10 @@ export default function LeaderHomeEdit() {
 }
 
 function HeroForm({ defaultValues, onSubmit }: any) {
-  const form = useForm({ defaultValues });
-  useEffect(() => { form.reset(defaultValues); }, [defaultValues, form]);
+  const form = useForm({ defaultValues: { ...defaultValues, useLogo: defaultValues.useLogo || false, logoImage: defaultValues.logoImage || "" } });
+  useEffect(() => { form.reset({ ...defaultValues, useLogo: defaultValues.useLogo || false, logoImage: defaultValues.logoImage || "" }); }, [defaultValues, form]);
+
+  const useLogo = form.watch("useLogo");
 
   return (
     <Card>
@@ -96,14 +99,33 @@ function HeroForm({ defaultValues, onSubmit }: any) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField control={form.control} name="title" render={({ field }) => (
-              <FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+            <FormField control={form.control} name="useLogo" render={({ field }) => (
+              <FormItem className="flex flex-row items-center gap-3 space-y-0 rounded-lg border p-4">
+                <FormControl>
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} data-testid="checkbox-use-logo" />
+                </FormControl>
+                <div>
+                  <FormLabel className="text-base font-medium">Use Logo Instead of Text Headline</FormLabel>
+                  <p className="text-sm text-muted-foreground">Display a logo image in place of the text headline</p>
+                </div>
+              </FormItem>
             )} />
+
+            {useLogo ? (
+              <FormField control={form.control} name="logoImage" render={({ field }) => (
+                <FormItem><FormLabel>Hero Logo Image</FormLabel><FormControl><MediaPicker value={field.value} onSelect={field.onChange} /></FormControl></FormItem>
+              )} />
+            ) : (
+              <FormField control={form.control} name="title" render={({ field }) => (
+                <FormItem><FormLabel>Headline</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+            )}
+
             <FormField control={form.control} name="subtitle" render={({ field }) => (
               <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
             )} />
             <FormField control={form.control} name="imageUrl" render={({ field }) => (
-              <FormItem><FormLabel>Background Image</FormLabel><FormControl><MediaPicker value={field.value} onChange={field.onChange} /></FormControl></FormItem>
+              <FormItem><FormLabel>Background Image</FormLabel><FormControl><MediaPicker value={field.value} onSelect={field.onChange} /></FormControl></FormItem>
             )} />
             
             <div className="grid grid-cols-2 gap-4 pt-4 border-t">

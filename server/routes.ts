@@ -309,6 +309,18 @@ async function seedDatabase() {
     ]);
   }
 
+  // Seed Social Links
+  const globalSections = await storage.getSectionsByPage("global");
+  if (globalSections.length === 0) {
+    await storage.updateSectionSafe("global", "social_links", {
+      links: [
+        { platform: "facebook", url: "https://facebook.com" },
+        { platform: "instagram", url: "https://instagram.com" },
+        { platform: "youtube", url: "https://youtube.com" },
+      ]
+    });
+  }
+
   // Seed Dashboard Shortcuts
   const shortcuts = await storage.getShortcuts();
   if (shortcuts.length === 0) {
