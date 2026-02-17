@@ -11,9 +11,7 @@ export function Footer() {
             <h3 className="font-display text-2xl font-bold text-white">
               New Life<span className="text-primary-foreground/80">Students</span>
             </h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              A community of believers dedicated to loving God and loving people. Join us this Sunday!
-            </p>
+            <p className="text-slate-400 text-sm leading-relaxed">You're Here On Purpose</p>
             <div className="flex gap-4 pt-2">
               <a href="#" className="hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>
               <a href="#" className="hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
@@ -36,8 +34,7 @@ export function Footer() {
           <div>
             <h4 className="font-bold text-white mb-6">Service Times</h4>
             <ul className="space-y-3 text-sm text-slate-400">
-              <li><span className="text-white font-medium block">Sundays</span> 9:00 AM & 11:00 AM</li>
-              <li><span className="text-white font-medium block">Wednesdays</span> 7:00 PM (Youth & Kids)</li>
+              <li><span className="text-white font-medium block">Wednesdays</span> 6:30 PM</li>
               <li className="pt-2">Online streaming available.</li>
             </ul>
           </div>
