@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Plus, UserCheck, UserX, Shield, Clock, Users } from "lucide-react";
+import { Loader2, Plus, UserCheck, UserX, Shield, Clock, Users, Trash2 } from "lucide-react";
 import type { User } from "@shared/models/auth";
 
 const addUserSchema = z.object({
@@ -105,6 +105,24 @@ export default function LeaderUsers() {
       firstName: "",
       lastName: "",
       role: "admin_leader",
+    },
+  });
+
+  const deleteUser = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/users/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to delete user");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: "User deleted", description: "The user has been permanently removed." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete user.", variant: "destructive" });
     },
   });
 
@@ -280,15 +298,30 @@ export default function LeaderUsers() {
                         <p className="font-medium truncate">{u.firstName} {u.lastName}</p>
                         <p className="text-sm text-muted-foreground truncate">{u.email}</p>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => updateRole.mutate({ id: u.id, role: "admin_leader" })}
-                        disabled={updateRole.isPending}
-                        data-testid={`button-restore-${u.id}`}
-                      >
-                        <UserCheck className="w-4 h-4 mr-1" /> Restore Access
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateRole.mutate({ id: u.id, role: "admin_leader" })}
+                          disabled={updateRole.isPending}
+                          data-testid={`button-restore-${u.id}`}
+                        >
+                          <UserCheck className="w-4 h-4 mr-1" /> Restore Access
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            if (confirm("Are you sure you want to permanently delete this user? This cannot be undone.")) {
+                              deleteUser.mutate(u.id);
+                            }
+                          }}
+                          disabled={deleteUser.isPending}
+                          data-testid={`button-delete-${u.id}`}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" /> Delete
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>

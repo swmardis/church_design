@@ -79,11 +79,11 @@ export function registerAuthRoutes(app: Express): void {
       if (id === currentUserId) {
         return res.status(400).json({ message: "Cannot remove yourself" });
       }
-      await authStorage.updateUserRole(id, "denied");
-      res.status(200).json({ message: "User access removed" });
+      await authStorage.deleteUser(id);
+      res.status(200).json({ message: "User deleted" });
     } catch (error) {
-      console.error("Error removing user:", error);
-      res.status(500).json({ message: "Failed to remove user" });
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
     }
   });
 }

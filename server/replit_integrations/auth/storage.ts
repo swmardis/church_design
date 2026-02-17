@@ -7,6 +7,7 @@ export interface IAuthStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
   updateUserRole(id: string, role: string): Promise<User>;
+  deleteUser(id: string): Promise<void>;
   createUserManually(userData: { email: string; firstName: string; lastName: string; role: string }): Promise<User>;
 }
 
@@ -45,6 +46,10 @@ class AuthStorage implements IAuthStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
   }
 
   async createUserManually(userData: { email: string; firstName: string; lastName: string; role: string }): Promise<User> {
