@@ -23,6 +23,7 @@ import LeaderAbout from "@/pages/leader/LeaderAbout";
 import LeaderNextSteps from "@/pages/leader/LeaderNextSteps";
 import LeaderContact from "@/pages/leader/LeaderContact";
 import LeaderSettings from "@/pages/leader/LeaderSettings";
+import LeaderUsers from "@/pages/leader/LeaderUsers";
 import { LeaderLayout } from "@/components/LeaderLayout";
 
 // Wrapper for public pages (adds Nav + Footer)
@@ -52,6 +53,7 @@ function Router() {
           <Route path="/leader/next-steps" component={LeaderNextSteps} />
           <Route path="/leader/contact" component={LeaderContact} />
           <Route path="/leader/settings" component={LeaderSettings} />
+          <Route path="/leader/users" component={LeaderUsers} />
           <Route component={NotFound} />
         </Switch>
       </LeaderLayout>

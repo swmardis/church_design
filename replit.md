@@ -43,11 +43,14 @@ Preferred communication style: Simple, everyday language.
   - `media` — Media library entries (URL, filename, MIME type)
   - `settings` — Key-value settings for site configuration (colors, fonts, site name, etc.)
   - `dashboard_shortcuts` — Customizable dashboard quick links for the leader portal
-  - `users` — User accounts (required for Replit Auth)
+  - `users` — User accounts with role-based access control (role: pending, approved, admin_leader, denied)
   - `sessions` — Session storage (required for Replit Auth, uses `connect-pg-simple`)
 
-### Authentication
+### Authentication & Authorization
 - **Provider**: Replit Auth (OpenID Connect)
+- **Roles**: `pending` (default for new signups), `approved` (view access), `admin_leader` (full CMS access), `denied` (blocked)
+- **Access Control**: `isAdminLeader` middleware on all leader API routes; only `admin_leader` role can access the Leader Portal
+- **User Management**: Admin leaders can approve/deny pending users, change roles, and manually add new users via `/leader/users`
 - **Session Management**: `express-session` with `connect-pg-simple` storing sessions in PostgreSQL
 - **Auth Flow**: OIDC discovery via Replit's issuer URL, Passport.js strategy, user upsert on login
 - **Protection**: `isAuthenticated` middleware on leader/admin API routes; client redirects to `/api/login` if unauthenticated

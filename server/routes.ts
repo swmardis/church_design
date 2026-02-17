@@ -7,7 +7,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import express from "express";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
+import { setupAuth, registerAuthRoutes, isAdminLeader } from "./replit_integrations/auth";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -46,8 +46,7 @@ export async function registerRoutes(
     res.json(sections);
   });
 
-  app.post(api.content.updateSection.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.post(api.content.updateSection.path, isAdminLeader, async (req, res) => {
     
     const { page, sectionKey } = req.params;
     const { content } = req.body;
@@ -63,8 +62,7 @@ export async function registerRoutes(
     res.json(events);
   });
 
-  app.post(api.events.create.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.post(api.events.create.path, isAdminLeader, async (req, res) => {
     
     try {
       const input = api.events.create.input.parse(req.body);
@@ -78,8 +76,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put(api.events.update.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.put(api.events.update.path, isAdminLeader, async (req, res) => {
     
     try {
       const input = api.events.update.input.parse(req.body);
@@ -94,8 +91,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete(api.events.delete.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.delete(api.events.delete.path, isAdminLeader, async (req, res) => {
     
     await storage.deleteEvent(Number(req.params.id));
     res.status(204).send();
@@ -107,8 +103,7 @@ export async function registerRoutes(
     res.json(items);
   });
 
-  app.post(api.media.upload.path, upload.single("file"), async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.post(api.media.upload.path, isAdminLeader, upload.single("file"), async (req, res) => {
     
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
@@ -121,8 +116,7 @@ export async function registerRoutes(
     res.status(201).json(item);
   });
 
-  app.delete(api.media.delete.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.delete(api.media.delete.path, isAdminLeader, async (req, res) => {
     
     const id = Number(req.params.id);
     const item = await storage.getMediaItem(id);
@@ -144,8 +138,7 @@ export async function registerRoutes(
     res.json(settings);
   });
 
-  app.post(api.settings.update.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.post(api.settings.update.path, isAdminLeader, async (req, res) => {
     
     const input = api.settings.update.input.parse(req.body);
     const settings = await storage.updateSettings(input);
@@ -158,8 +151,7 @@ export async function registerRoutes(
     res.json(shortcuts);
   });
 
-  app.post(api.shortcuts.create.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.post(api.shortcuts.create.path, isAdminLeader, async (req, res) => {
     
     try {
       const input = api.shortcuts.create.input.parse(req.body);
@@ -173,16 +165,14 @@ export async function registerRoutes(
     }
   });
 
-  app.delete(api.shortcuts.delete.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.delete(api.shortcuts.delete.path, isAdminLeader, async (req, res) => {
     
     await storage.deleteShortcut(Number(req.params.id));
     res.status(204).send();
   });
   
   // === PCO Integration (Mock for now) ===
-  app.post("/api/pco/sync", async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+  app.post("/api/pco/sync", isAdminLeader, async (req, res) => {
     
     // In a real implementation, this would fetch from PCO API
     // For now, let's just return a success message

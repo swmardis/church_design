@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { insertSectionSchema, insertEventSchema, insertMediaSchema, insertSettingSchema, insertShortcutSchema, site_sections, events, media, settings, dashboard_shortcuts } from './schema';
 
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+
 export const errorSchemas = {
   validation: z.object({
     message: z.string(),
@@ -51,7 +53,7 @@ export const api = {
     create: {
       method: 'POST' as const,
       path: '/api/events' as const,
-      input: insertEventSchema,
+      input: insertEventSchema.extend({ date: z.coerce.date() }),
       responses: {
         201: z.custom<typeof events.$inferSelect>(),
         401: errorSchemas.unauthorized,
@@ -60,7 +62,7 @@ export const api = {
     update: {
       method: 'PUT' as const,
       path: '/api/events/:id' as const,
-      input: insertEventSchema.partial(),
+      input: insertEventSchema.extend({ date: z.coerce.date() }).partial(),
       responses: {
         200: z.custom<typeof events.$inferSelect>(),
         404: errorSchemas.notFound,
