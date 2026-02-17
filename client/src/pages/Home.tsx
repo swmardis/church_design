@@ -199,7 +199,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-12">
               <div>
                 <h2 className="font-display text-3xl font-bold mb-2">Upcoming Events</h2>
-                <p className="text-muted-foreground">See what's happening at Grace Church.</p>
+                <p className="text-muted-foreground">See what's happening at New Life.</p>
               </div>
               <Button variant="outline" asChild>
                 <Link href="/events">View All Events</Link>
