@@ -131,7 +131,7 @@ export default function LeaderUsers() {
   const deniedUsers = users?.filter(u => u.role === "denied") || [];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold" data-testid="text-users-title">User Management</h1>

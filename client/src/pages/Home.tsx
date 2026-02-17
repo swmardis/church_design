@@ -196,12 +196,12 @@ export default function Home() {
       {upcomingEvents && upcomingEvents.length > 0 && (
         <section className="py-24 bg-muted/10">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
               <div>
                 <h2 className="font-display text-3xl font-bold mb-2">Upcoming Events</h2>
                 <p className="text-muted-foreground">See what's happening at New Life.</p>
               </div>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="self-start sm:self-auto shrink-0">
                 <Link href="/events">View All Events</Link>
               </Button>
             </div>

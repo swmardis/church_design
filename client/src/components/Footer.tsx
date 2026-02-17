@@ -29,7 +29,7 @@ export function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-200 py-16">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
           <div className="space-y-4">
             <h3 className="font-display text-2xl font-bold text-white">
               {siteName}
@@ -97,7 +97,7 @@ export function Footer() {
         <div className="border-t border-slate-800 mt-16 pt-8 text-center text-xs text-slate-500">
           <p>&copy; {new Date().getFullYear()} {siteName}. All rights reserved.</p>
           <div className="mt-2">
-            <Link href="/leader/login" className="hover:text-slate-300 transition-colors">Leader Portal</Link>
+            <Link href="/leader/dashboard" className="hover:text-slate-300 transition-colors" data-testid="link-leader-portal">Leader Portal</Link>
           </div>
         </div>
       </div>

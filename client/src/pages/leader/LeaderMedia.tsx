@@ -38,7 +38,7 @@ export default function LeaderMedia() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-4rem)] flex flex-col">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-[calc(100vh-4rem)] flex flex-col">
       <div className="mb-8">
         <h1 className="font-display text-3xl font-bold">Media Library</h1>
         <p className="text-muted-foreground">Manage your images and documents.</p>

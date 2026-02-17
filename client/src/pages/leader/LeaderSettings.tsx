@@ -127,7 +127,7 @@ export default function LeaderSettings() {
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="font-display text-3xl font-bold" data-testid="text-settings-title">Global Settings</h1>
         <Button onClick={handleSave} disabled={updateSettings.isPending} data-testid="button-save-settings">

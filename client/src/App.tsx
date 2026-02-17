@@ -25,14 +25,15 @@ import LeaderContact from "@/pages/leader/LeaderContact";
 import LeaderSettings from "@/pages/leader/LeaderSettings";
 import LeaderUsers from "@/pages/leader/LeaderUsers";
 import { LeaderLayout } from "@/components/LeaderLayout";
+import { BackToTop } from "@/components/BackToTop";
 
-// Wrapper for public pages (adds Nav + Footer)
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans text-foreground">
       <Navigation />
       <main className="flex-1">{children}</main>
       <Footer />
+      <BackToTop />
     </div>
   );
 }

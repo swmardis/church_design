@@ -34,14 +34,14 @@ export default function LeaderHomeEdit() {
   if (isLoading) return <div className="flex justify-center p-20"><Loader2 className="w-8 h-8 animate-spin" /></div>;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in">
-      <div className="flex justify-between items-center">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="font-display text-3xl font-bold">Edit Home Page</h1>
         <Button variant="outline" onClick={() => window.open('/', '_blank')}>View Live</Button>
       </div>
 
       <Tabs defaultValue="hero">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="hero">Hero Section</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
           <TabsTrigger value="services">Service Types</TabsTrigger>
@@ -150,7 +150,7 @@ function HeroForm({ defaultValues, onSubmit }: any) {
               <FormItem><FormLabel>Background Image</FormLabel><FormControl><MediaPicker value={field.value} onSelect={field.onChange} /></FormControl></FormItem>
             )} />
             
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t">
               <div className="space-y-4">
                 <FormField control={form.control} name="primaryButtonText" render={({ field }) => (
                   <FormItem><FormLabel>Primary Button Text</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>

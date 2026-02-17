@@ -1,13 +1,17 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, FileText, Calendar, Image, Settings, LogOut, Home, Users, Clock, ShieldX } from "lucide-react";
+import { LayoutDashboard, FileText, Calendar, Image, Settings, LogOut, Home, Users, Clock, ShieldX, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
+import { BackToTop } from "@/components/BackToTop";
 
 export function LeaderLayout({ children }: { children: React.ReactNode }) {
   const { user, logout, isLoading } = useAuth();
   const [location] = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   if (isLoading) return null;
 
@@ -81,6 +85,45 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
     { href: "/leader/settings", icon: Settings, label: "Settings" },
   ];
 
+  const SidebarNav = ({ onNavigate }: { onNavigate?: () => void }) => (
+    <>
+      <nav className="flex-1 p-4 space-y-1">
+        {navItems.map((item) => (
+          <Link key={item.href} href={item.href} onClick={onNavigate}>
+            <div className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              location === item.href 
+                ? "bg-primary/10 text-primary" 
+                : "text-slate-600 hover-elevate"
+            )} data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
+              <item.icon className="w-5 h-5" />
+              {item.label}
+            </div>
+          </Link>
+        ))}
+      </nav>
+
+      <div className="p-4 border-t space-y-2">
+        <div className="px-3 py-2 text-xs text-muted-foreground truncate">
+          {user.firstName} {user.lastName}
+        </div>
+        <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600" asChild onClick={onNavigate}>
+          <Link href="/">
+            <Home className="w-5 h-5" /> View Site
+          </Link>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start gap-3 text-destructive"
+          onClick={() => logout()}
+          data-testid="button-logout"
+        >
+          <LogOut className="w-5 h-5" /> Sign Out
+        </Button>
+      </div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <aside className="w-64 bg-white border-r border-border hidden md:flex flex-col fixed h-full z-10">
@@ -89,46 +132,36 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
             Leader<span className="text-foreground">Portal</span>
           </Link>
         </div>
-
-        <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <div className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === item.href 
-                  ? "bg-primary/10 text-primary" 
-                  : "text-slate-600 hover-elevate"
-              )} data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
-                <item.icon className="w-5 h-5" />
-                {item.label}
-              </div>
-            </Link>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t space-y-2">
-          <div className="px-3 py-2 text-xs text-muted-foreground truncate">
-            {user.firstName} {user.lastName}
-          </div>
-          <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600" asChild>
-            <Link href="/">
-              <Home className="w-5 h-5" /> View Site
-            </Link>
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3 text-destructive"
-            onClick={() => logout()}
-            data-testid="button-logout"
-          >
-            <LogOut className="w-5 h-5" /> Sign Out
-          </Button>
-        </div>
+        <SidebarNav />
       </aside>
 
-      <main className="flex-1 md:ml-64 min-h-screen">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-border">
+        <div className="flex items-center justify-between px-4 h-14">
+          <Link href="/leader/dashboard" className="font-display text-lg font-bold text-primary">
+            Leader<span className="text-foreground">Portal</span>
+          </Link>
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" data-testid="button-mobile-menu">
+                <Menu className="w-5 h-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 p-0">
+              <div className="p-6 border-b">
+                <span className="font-display text-xl font-bold text-primary">Leader<span className="text-foreground">Portal</span></span>
+              </div>
+              <div className="flex flex-col h-[calc(100%-73px)]">
+                <SidebarNav onNavigate={() => setMobileOpen(false)} />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      <main className="flex-1 md:ml-64 min-h-screen pt-14 md:pt-0">
         {children}
       </main>
+      <BackToTop />
     </div>
   );
 }

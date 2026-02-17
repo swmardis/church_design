@@ -60,8 +60,8 @@ export default function LeaderEvents() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-3xl font-bold">Events Manager</h1>
           <p className="text-muted-foreground">Create and manage church events.</p>
@@ -93,7 +93,7 @@ export default function LeaderEvents() {
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="date"
@@ -198,7 +198,7 @@ export default function LeaderEvents() {
         ) : (
           <div className="divide-y">
             {events?.map((event) => (
-              <div key={event.id} className="p-6 flex items-center gap-6 hover:bg-muted/30 transition-colors group">
+              <div key={event.id} className="p-4 md:p-6 flex items-start sm:items-center gap-4 md:gap-6 hover:bg-muted/30 transition-colors group flex-wrap sm:flex-nowrap">
                 <div className="w-16 h-16 rounded-lg bg-muted flex flex-col items-center justify-center border shrink-0">
                   <span className="text-xs font-bold text-red-500 uppercase">{format(event.date, "MMM")}</span>
                   <span className="text-xl font-bold">{format(event.date, "d")}</span>

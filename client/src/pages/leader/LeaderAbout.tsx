@@ -20,7 +20,7 @@ export default function LeaderAbout() {
   const team = getSectionContent(sections, "team", { leaders: [] });
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
       <h1 className="font-display text-3xl font-bold">Edit About Page</h1>
 
       {isLoading ? (

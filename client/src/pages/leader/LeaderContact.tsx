@@ -16,7 +16,7 @@ export default function LeaderContact() {
   const info = getSectionContent(sections, "info", { address: "", email: "", phone: "", serviceTimes: "" });
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
       <h1 className="font-display text-3xl font-bold">Edit Contact Info</h1>
 
       {isLoading ? (
