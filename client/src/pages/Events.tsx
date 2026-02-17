@@ -44,7 +44,6 @@ export default function Events() {
           </p>
         </div>
       </div>
-
       <div className="container mx-auto px-4 py-12">
         {/* Filters */}
         <div className="flex justify-center mb-12">
@@ -137,9 +136,7 @@ export default function Events() {
                     {event.description}
                   </p>
 
-                  <Button variant="default" className="w-full sm:w-auto self-start">
-                    Details & Registration
-                  </Button>
+                  <Button variant="default" className="w-full sm:w-auto self-start">Details</Button>
                 </div>
               </div>
             ))}
