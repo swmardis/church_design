@@ -13,8 +13,8 @@ export function Footer() {
             </h3>
             <p className="text-slate-400 text-sm leading-relaxed">You're Here On Purpose</p>
             <div className="flex gap-4 pt-2">
-              <a href="#" className="hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>
-              <a href="#" className="hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
+              <a href="https://www.facebook.com/nlcstudents" className="hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>
+              <a href="https://www.instagram.com/nlstudentsga/" className="hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
               <a href="#" className="hover:text-white transition-colors"><Youtube className="w-5 h-5" /></a>
             </div>
           </div>
