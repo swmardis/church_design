@@ -160,7 +160,7 @@ export default function Home() {
       {serviceTypes.items && serviceTypes.items.length > 0 && (
         <section className="py-24">
           <div className="container mx-auto px-4">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-12 text-center">Service Types</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-12 text-left">Service Types</h2>
             <div className="space-y-16">
               {serviceTypes.items.map((item: any, i: number) => (
                 <div key={i} className={`flex flex-col ${i % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-12`}>
