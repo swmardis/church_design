@@ -22,8 +22,11 @@ export function Navigation() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="font-display text-2xl font-bold tracking-tight text-primary">
-          Grace<span className="text-foreground">Church</span>
+        <Link
+          href="/"
+          className="font-display text-2xl font-bold tracking-tight text-primary"
+        >
+          New Life<span className="text-foreground">Students</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -34,7 +37,7 @@ export function Navigation() {
               href={link.href}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                isActive(link.href) ? "text-primary" : "text-muted-foreground"
+                isActive(link.href) ? "text-primary" : "text-muted-foreground",
               )}
             >
               {link.label}
@@ -61,7 +64,7 @@ export function Navigation() {
                     href={link.href}
                     className={cn(
                       "text-xl font-medium transition-colors hover:text-primary",
-                      isActive(link.href) ? "text-primary" : "text-foreground"
+                      isActive(link.href) ? "text-primary" : "text-foreground",
                     )}
                     onClick={() => setIsOpen(false)}
                   >
@@ -69,7 +72,11 @@ export function Navigation() {
                   </Link>
                 ))}
                 <div className="pt-6 border-t">
-                  <Button className="w-full rounded-full" asChild onClick={() => setIsOpen(false)}>
+                  <Button
+                    className="w-full rounded-full"
+                    asChild
+                    onClick={() => setIsOpen(false)}
+                  >
                     <Link href="/next-steps">Plan Your Visit</Link>
                   </Button>
                 </div>

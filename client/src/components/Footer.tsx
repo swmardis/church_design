@@ -9,7 +9,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <h3 className="font-display text-2xl font-bold text-white">
-              Grace<span className="text-primary-foreground/80">Church</span>
+              New Life<span className="text-primary-foreground/80">Students</span>
             </h3>
             <p className="text-slate-400 text-sm leading-relaxed">
               A community of believers dedicated to loving God and loving people. Join us this Sunday!
@@ -38,7 +38,7 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-slate-400">
               <li><span className="text-white font-medium block">Sundays</span> 9:00 AM & 11:00 AM</li>
               <li><span className="text-white font-medium block">Wednesdays</span> 7:00 PM (Youth & Kids)</li>
-              <li className="pt-2">Online streaming available for all Sunday services.</li>
+              <li className="pt-2">Online streaming available.</li>
             </ul>
           </div>
 
@@ -48,7 +48,7 @@ export function Footer() {
             <ul className="space-y-4 text-sm text-slate-400">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary shrink-0" />
-                <span>1234 Faith Avenue<br/>Springfield, ST 12345</span>
+                <span>154 Lakeside Dr<br/>Canton, GA 30115</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary shrink-0" />
@@ -56,14 +56,14 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary shrink-0" />
-                <span>hello@gracechurch.com</span>
+                <span>sarah@newlifecanton.com</span>
               </li>
             </ul>
           </div>
         </div>
         
         <div className="border-t border-slate-800 mt-16 pt-8 text-center text-xs text-slate-500">
-          <p>&copy; {new Date().getFullYear()} Grace Church. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} New Life Church. All rights reserved.</p>
           <div className="mt-2">
             <Link href="/leader/login" className="hover:text-slate-300 transition-colors">Leader Portal</Link>
           </div>
