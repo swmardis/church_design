@@ -40,7 +40,7 @@ export function Navigation() {
               {link.label}
             </Link>
           ))}
-          <Button size="sm" asChild className="rounded-full px-6">
+          <Button size="sm" asChild className="rounded-full px-6 bg-[#495bf2]">
             <Link href="/next-steps">I'm New</Link>
           </Button>
         </div>
