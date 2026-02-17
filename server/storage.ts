@@ -1,4 +1,4 @@
-import { site_sections, events, media, settings, type Section, type InsertSection, type Event, type InsertEvent, type MediaItem, type InsertMedia, type Setting, type InsertSetting } from "@shared/schema";
+import { site_sections, events, media, settings, dashboard_shortcuts, type Section, type InsertSection, type Event, type InsertEvent, type MediaItem, type InsertMedia, type Setting, type InsertSetting, type DashboardShortcut, type InsertDashboardShortcut } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 
@@ -7,6 +7,7 @@ export interface IStorage {
   getSection(pageSlug: string, sectionKey: string): Promise<Section | undefined>;
   getSectionsByPage(pageSlug: string): Promise<Section[]>;
   updateSection(pageSlug: string, sectionKey: string, content: any): Promise<Section>;
+  updateSectionSafe(pageSlug: string, sectionKey: string, content: any): Promise<Section>;
 
   // Events
   getEvents(): Promise<Event[]>;
@@ -24,6 +25,11 @@ export interface IStorage {
   // Settings
   getSettings(): Promise<Setting[]>;
   updateSettings(settings: { key: string; value: any }[]): Promise<Setting[]>;
+
+  // Dashboard Shortcuts
+  getShortcuts(): Promise<DashboardShortcut[]>;
+  createShortcut(shortcut: InsertDashboardShortcut): Promise<DashboardShortcut>;
+  deleteShortcut(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -41,24 +47,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateSection(pageSlug: string, sectionKey: string, content: any): Promise<Section> {
-    const [section] = await db
-      .insert(site_sections)
-      .values({ pageSlug, sectionKey, content })
-      .onConflictDoUpdate({
-        target: [site_sections.pageSlug, site_sections.sectionKey],
-        set: { content, updatedAt: new Date() },
-      }) // This requires a unique constraint on pageSlug + sectionKey in the DB schema, which we should add or handle manually.
-      // Drizzle ORM doesn't support multi-column unique constraints in `pgTable` easily without manual SQL or `uniqueIndex`.
-      // Let's use `onConflictDoUpdate` but we need a constraint.
-      // Alternatively, check existence first.
-      .returning();
-      
-    // Actually, let's fix the schema to have a unique constraint, OR just check and update.
-    // Since I can't easily modify the schema migration file right now without a re-run, I'll do a check-and-update.
-    return section;
+      // This is the same logic as updateSectionSafe really, but kept for interface compatibility
+      return this.updateSectionSafe(pageSlug, sectionKey, content);
   }
   
-  // Custom updateSection implementation to handle the unique constraint issue if it doesn't exist
   async updateSectionSafe(pageSlug: string, sectionKey: string, content: any): Promise<Section> {
       const existing = await this.getSection(pageSlug, sectionKey);
       if (existing) {
@@ -130,17 +122,39 @@ export class DatabaseStorage implements IStorage {
   async updateSettings(newSettings: { key: string; value: any }[]): Promise<Setting[]> {
     const updatedSettings: Setting[] = [];
     for (const setting of newSettings) {
-      const [updated] = await db
-        .insert(settings)
-        .values(setting)
-        .onConflictDoUpdate({
-          target: settings.key,
-          set: { value: setting.value, updatedAt: new Date() },
-        })
-        .returning();
-      updatedSettings.push(updated);
+      // Check if exists first to handle unique constraint safely
+      const [existing] = await db.select().from(settings).where(eq(settings.key, setting.key));
+      
+      if (existing) {
+        const [updated] = await db
+          .update(settings)
+          .set({ value: setting.value, updatedAt: new Date() })
+          .where(eq(settings.id, existing.id))
+          .returning();
+        updatedSettings.push(updated);
+      } else {
+        const [created] = await db
+          .insert(settings)
+          .values(setting)
+          .returning();
+        updatedSettings.push(created);
+      }
     }
     return updatedSettings;
+  }
+
+  // Dashboard Shortcuts
+  async getShortcuts(): Promise<DashboardShortcut[]> {
+    return await db.select().from(dashboard_shortcuts).orderBy(dashboard_shortcuts.order);
+  }
+
+  async createShortcut(shortcut: InsertDashboardShortcut): Promise<DashboardShortcut> {
+    const [newShortcut] = await db.insert(dashboard_shortcuts).values(shortcut).returning();
+    return newShortcut;
+  }
+
+  async deleteShortcut(id: number): Promise<void> {
+    await db.delete(dashboard_shortcuts).where(eq(dashboard_shortcuts.id, id));
   }
 }
 

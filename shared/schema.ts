@@ -10,7 +10,7 @@ export * from "./models/auth";
 export const site_sections = pgTable("site_sections", {
   id: serial("id").primaryKey(),
   pageSlug: text("page_slug").notNull(), // home, about, contact, etc.
-  sectionKey: text("section_key").notNull(), // hero, schedule, featured_cards, etc.
+  sectionKey: text("section_key").notNull(), // hero, schedule, service_types, etc.
   content: jsonb("content").notNull(), // Structured content for that section
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -55,7 +55,13 @@ export type InsertMedia = z.infer<typeof insertMediaSchema>;
 // Stores theme colors, logos, contact info, etc.
 export const settings = pgTable("settings", {
   id: serial("id").primaryKey(),
-  key: text("key").notNull().unique(), // primary_color, header_logo, etc.
+  key: text("key").notNull().unique(), 
+  // Keys: 
+  // site_name, primary_color, secondary_color, 
+  // contact_email, contact_phone, contact_address
+  // header_logo, footer_logo, 
+  // menu_bg_color, menu_text_color, 
+  // site_bg_color, site_font, site_text_color
   value: jsonb("value").notNull(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -63,6 +69,23 @@ export const settings = pgTable("settings", {
 export const insertSettingSchema = createInsertSchema(settings).omit({ id: true, updatedAt: true });
 export type Setting = typeof settings.$inferSelect;
 export type InsertSetting = z.infer<typeof insertSettingSchema>;
+
+// === Dashboard Shortcuts ===
+// Customizable links for the leader dashboard
+export const dashboard_shortcuts = pgTable("dashboard_shortcuts", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  icon: text("icon").notNull(), // Lucide icon name
+  href: text("href").notNull(),
+  color: text("color").default("text-primary"),
+  bgColor: text("bg_color").default("bg-primary/10"),
+  order: integer("order").default(0),
+});
+
+export const insertShortcutSchema = createInsertSchema(dashboard_shortcuts).omit({ id: true });
+export type DashboardShortcut = typeof dashboard_shortcuts.$inferSelect;
+export type InsertDashboardShortcut = z.infer<typeof insertShortcutSchema>;
 
 // === API Types ===
 

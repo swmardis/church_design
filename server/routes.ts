@@ -151,6 +151,34 @@ export async function registerRoutes(
     const settings = await storage.updateSettings(input);
     res.json(settings);
   });
+
+  // === Dashboard Shortcuts Routes ===
+  app.get(api.shortcuts.list.path, async (req, res) => {
+    const shortcuts = await storage.getShortcuts();
+    res.json(shortcuts);
+  });
+
+  app.post(api.shortcuts.create.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    
+    try {
+      const input = api.shortcuts.create.input.parse(req.body);
+      const shortcut = await storage.createShortcut(input);
+      res.status(201).json(shortcut);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      throw err;
+    }
+  });
+
+  app.delete(api.shortcuts.delete.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    
+    await storage.deleteShortcut(Number(req.params.id));
+    res.status(204).send();
+  });
   
   // === PCO Integration (Mock for now) ===
   app.post("/api/pco/sync", async (req, res) => {
@@ -196,6 +224,24 @@ async function seedDatabase() {
         { title: "New Here?", body: "Plan your visit and see what we're about.", buttonText: "Learn More", buttonUrl: "/about", image: "https://images.unsplash.com/photo-1507643179173-617d699f8696?auto=format&fit=crop&q=80" },
         { title: "Get Involved", body: "Find a group or serve with us.", buttonText: "Next Steps", buttonUrl: "/next-steps", image: "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&q=80" },
         { title: "Events", body: "See what's coming up next.", buttonText: "View Calendar", buttonUrl: "/events", image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80" }
+      ]
+    });
+
+    // Seed Service Types (New Section)
+    await storage.updateSectionSafe("home", "service_types", {
+      types: [
+        { 
+          title: "First Wednesday", 
+          description: "On the first Wednesday of the month, students join the church for First Wednesday! The students are encouraged to gather in the student section to worship and listen to the message together!", 
+          imageUrl: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80",
+          alignment: "right"
+        },
+        { 
+          title: "Life Night", 
+          description: "Life Night is our dynamic, next-level worship service that we put on for students each month. Life Nights are our evangelistic services that are geared toward the lost.", 
+          imageUrl: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80",
+          alignment: "left"
+        }
       ]
     });
   }
@@ -254,8 +300,23 @@ async function seedDatabase() {
       { key: "secondary_color", value: "hsl(210 40% 96.1%)" },
       { key: "contact_email", value: "info@church.com" },
       { key: "contact_phone", value: "(555) 123-4567" },
-      { key: "contact_address", value: "123 Main St, Anytown, USA" }
+      { key: "contact_address", value: "123 Main St, Anytown, USA" },
+      // New Settings
+      { key: "menu_bg_color", value: "hsl(0 0% 100%)" },
+      { key: "menu_text_color", value: "hsl(222.2 47.4% 11.2%)" },
+      { key: "site_bg_color", value: "hsl(0 0% 100%)" },
+      { key: "site_text_color", value: "hsl(222.2 47.4% 11.2%)" },
+      { key: "font_family", value: "Inter" },
     ]);
+  }
+
+  // Seed Dashboard Shortcuts
+  const shortcuts = await storage.getShortcuts();
+  if (shortcuts.length === 0) {
+    await storage.createShortcut({ title: "Home Page", description: "Edit hero, schedule, service types", icon: "LayoutTemplate", href: "/leader/home", color: "text-blue-500", bgColor: "bg-blue-500/10", order: 1 });
+    await storage.createShortcut({ title: "Events", description: "Manage church calendar", icon: "Calendar", href: "/leader/events", color: "text-purple-500", bgColor: "bg-purple-500/10", order: 2 });
+    await storage.createShortcut({ title: "Media", description: "Upload photos & files", icon: "Image", href: "/leader/media", color: "text-green-500", bgColor: "bg-green-500/10", order: 3 });
+    await storage.createShortcut({ title: "Settings", description: "Theme & global configs", icon: "Settings", href: "/leader/settings", color: "text-orange-500", bgColor: "bg-orange-500/10", order: 4 });
   }
   
   const events = await storage.getEvents();

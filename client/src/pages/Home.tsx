@@ -5,8 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, Calendar, Clock, MapPin } from "lucide-react";
 import { Link } from "wouter";
 import { format } from "date-fns";
+import { useTheme } from "@/hooks/use-theme";
 
 export default function Home() {
+  useTheme(); // Apply global styles
   const { data: sections, isLoading } = usePageContent("home");
   const { data: events, isLoading: isEventsLoading } = useEvents();
 
@@ -28,12 +30,15 @@ export default function Home() {
     subtitle: "A place to belong, believe, and become.",
     imageUrl: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073&auto=format&fit=crop",
     primaryButtonText: "Plan Your Visit",
-    secondaryButtonText: "Watch Online"
+    primaryButtonUrl: "/next-steps",
+    secondaryButtonText: "Watch Online",
+    secondaryButtonUrl: "/events"
   });
 
   const schedule = getSectionContent(sections, "schedule", {
     title: "Join Us This Sunday",
     description: "We have something for everyone in the family. Come as you are!",
+    image: "https://images.unsplash.com/photo-1510590337019-5ef8d3d32116?auto=format&fit=crop&q=80",
     times: [
       { label: "Classic Service", time: "9:00 AM" },
       { label: "Modern Service", time: "11:00 AM" }
@@ -47,6 +52,8 @@ export default function Home() {
       { title: "Prayer Requests", description: "How can we pray for you today?", link: "/contact" }
     ]
   });
+
+  const serviceTypes = getSectionContent(sections, "service_types", { items: [] });
 
   // Get upcoming 3 events
   const upcomingEvents = events
@@ -79,11 +86,11 @@ export default function Home() {
               {hero.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" className="h-14 px-8 text-lg rounded-full" asChild>
-                <Link href="/next-steps">{hero.primaryButtonText}</Link>
+              <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg hover:scale-105 transition-all" asChild>
+                <Link href={hero.primaryButtonUrl}>{hero.primaryButtonText}</Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-md">
-                {hero.secondaryButtonText}
+              <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-md transition-all" asChild>
+                <Link href={hero.secondaryButtonUrl}>{hero.secondaryButtonText}</Link>
               </Button>
             </div>
           </div>
@@ -120,7 +127,7 @@ export default function Home() {
                 <div className="absolute -inset-4 bg-primary/20 rounded-full blur-3xl opacity-50" />
                 {/* Image of service */}
                 <img 
-                  src="https://pixabay.com/get/ga57ed6abeb8b0929de60e8a473afe7496f9ad782fafca275c1638c49a721a2691035c0de77a756d3ef084644b5e023c6b3b0676a6158e62378cbfb1164619a17_1280.jpg" 
+                  src={schedule.image} 
                   alt="Worship Service" 
                   className="relative rounded-2xl shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 w-full object-cover aspect-[4/3]"
                 />
@@ -132,7 +139,7 @@ export default function Home() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {schedule.times?.map((t: any, i: number) => (
-                  <div key={i} className="flex items-center gap-4 bg-background p-4 rounded-xl shadow-sm border border-border/50">
+                  <div key={i} className="flex items-center gap-4 bg-background p-4 rounded-xl shadow-sm border border-border/50 hover:border-primary/30 transition-colors">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                       <Clock className="w-6 h-6" />
                     </div>
@@ -144,17 +151,43 @@ export default function Home() {
                 ))}
               </div>
               
-              <Button size="lg" variant="secondary" className="mt-4">
-                Get Directions
+              <Button size="lg" variant="secondary" className="mt-4" asChild>
+                 <Link href="/contact">Get Directions</Link>
               </Button>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Service Types Section (New) */}
+      {serviceTypes.items && serviceTypes.items.length > 0 && (
+        <section className="py-24">
+          <div className="container mx-auto px-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-12 text-center">Gatherings</h2>
+            <div className="space-y-16">
+              {serviceTypes.items.map((item: any, i: number) => (
+                <div key={i} className={`flex flex-col ${i % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-12`}>
+                   <div className="md:w-1/2">
+                      {item.image ? (
+                        <img src={item.image} alt={item.title} className="rounded-2xl shadow-lg w-full aspect-video object-cover" />
+                      ) : (
+                        <div className="rounded-2xl bg-muted w-full aspect-video flex items-center justify-center text-muted-foreground">No Image</div>
+                      )}
+                   </div>
+                   <div className="md:w-1/2 space-y-4">
+                      <h3 className="text-3xl font-bold font-display">{item.title}</h3>
+                      <p className="text-lg text-muted-foreground leading-relaxed">{item.description}</p>
+                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Events Strip */}
       {upcomingEvents && upcomingEvents.length > 0 && (
-        <section className="py-24">
+        <section className="py-24 bg-muted/10">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-12">
               <div>

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertSectionSchema, insertEventSchema, insertMediaSchema, insertSettingSchema, site_sections, events, media, settings } from './schema';
+import { insertSectionSchema, insertEventSchema, insertMediaSchema, insertSettingSchema, insertShortcutSchema, site_sections, events, media, settings, dashboard_shortcuts } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -122,6 +122,35 @@ export const api = {
       input: z.array(z.object({ key: z.string(), value: z.any() })),
       responses: {
         200: z.array(z.custom<typeof settings.$inferSelect>()),
+        401: errorSchemas.unauthorized,
+      },
+    },
+  },
+
+  // === Dashboard Shortcuts ===
+  shortcuts: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/shortcuts' as const,
+      responses: {
+        200: z.array(z.custom<typeof dashboard_shortcuts.$inferSelect>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/shortcuts' as const,
+      input: insertShortcutSchema,
+      responses: {
+        201: z.custom<typeof dashboard_shortcuts.$inferSelect>(),
+        401: errorSchemas.unauthorized,
+      },
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/shortcuts/:id' as const,
+      responses: {
+        204: z.void(),
+        404: errorSchemas.notFound,
         401: errorSchemas.unauthorized,
       },
     },
