@@ -9,12 +9,17 @@ import { useDropzone } from "react-dropzone";
 import { cn } from "@/lib/utils";
 
 interface MediaPickerProps {
-  onSelect: (url: string) => void;
+  onSelect?: (url: string) => void;
+  onChange?: (url: string) => void;
   trigger?: React.ReactNode;
   value?: string;
 }
 
-export function MediaPicker({ onSelect, trigger, value }: MediaPickerProps) {
+export function MediaPicker({ onSelect, onChange, trigger, value }: MediaPickerProps) {
+  const handleSelect = (url: string) => {
+    onSelect?.(url);
+    onChange?.(url);
+  };
   const [isOpen, setIsOpen] = useState(false);
   const { data: media, isLoading } = useMedia();
   const { mutate: upload, isPending: isUploading } = useUploadMedia();
@@ -83,7 +88,7 @@ export function MediaPicker({ onSelect, trigger, value }: MediaPickerProps) {
                         value === item.url && "ring-2 ring-primary"
                       )}
                       onClick={() => {
-                        onSelect(item.url);
+                        handleSelect(item.url);
                         setIsOpen(false);
                       }}
                     >

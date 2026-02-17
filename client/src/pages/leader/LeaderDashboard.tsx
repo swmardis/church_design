@@ -13,41 +13,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 
-// Static default shortcuts in case DB is empty or for baseline
-const defaultShortcuts = [
-  { 
-    title: "Pages", 
-    description: "Edit website content", 
-    icon: "LayoutTemplate", 
-    href: "/leader/home",
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10" 
-  },
-  { 
-    title: "Events", 
-    description: "Manage church calendar", 
-    icon: "Calendar", 
-    href: "/leader/events",
-    color: "text-purple-500",
-    bgColor: "bg-purple-500/10" 
-  },
-  { 
-    title: "Media", 
-    description: "Upload photos & files", 
-    icon: "Image", 
-    href: "/leader/media",
-    color: "text-green-500",
-    bgColor: "bg-green-500/10" 
-  },
-  { 
-    title: "Settings", 
-    description: "Theme & global configs", 
-    icon: "Settings", 
-    href: "/leader/settings",
-    color: "text-orange-500",
-    bgColor: "bg-orange-500/10" 
-  },
-];
+// No hardcoded defaults - all shortcuts come from the database
 
 export default function LeaderDashboard() {
   const { user } = useAuth();
@@ -57,9 +23,7 @@ export default function LeaderDashboard() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Combine defaults with custom ones
-  // In a real app, you might want to fully replace defaults or merge intelligently
-  const allShortcuts = [...defaultShortcuts, ...(customShortcuts || [])];
+  const allShortcuts = customShortcuts || [];
 
   const handleDelete = async (e: React.MouseEvent, id: number) => {
     e.preventDefault(); // Prevent link navigation
@@ -102,10 +66,10 @@ export default function LeaderDashboard() {
           return (
             <Link key={idx} href={item.href}>
               <Card className="hover:shadow-lg transition-all cursor-pointer border-border/60 hover:border-primary/50 group h-full relative">
-                {isCustom && (
+                {item.id && (
                   <button
                     onClick={(e) => handleDelete(e, item.id)}
-                    className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive rounded-full transition-all"
+                    className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive rounded-full transition-all z-10"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
