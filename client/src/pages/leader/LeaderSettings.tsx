@@ -48,7 +48,6 @@ export default function LeaderSettings() {
     footer_logo: "",
   });
 
-  const socialData = getSectionContent(globalSections, "social_links", { links: [] });
   const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string }[]>([]);
   const [socialLoaded, setSocialLoaded] = useState(false);
 
@@ -72,11 +71,14 @@ export default function LeaderSettings() {
   }, [settings, loaded]);
 
   useEffect(() => {
-    if (socialData?.links && !socialLoaded) {
-      setSocialLinks(socialData.links);
-      setSocialLoaded(true);
+    if (globalSections && !socialLoaded) {
+      const socialData = getSectionContent(globalSections, "social_links", { links: [] });
+      if (globalSections.length > 0) {
+        setSocialLinks(socialData.links || []);
+        setSocialLoaded(true);
+      }
     }
-  }, [socialData, socialLoaded]);
+  }, [globalSections, socialLoaded]);
 
   const update = (key: string, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
