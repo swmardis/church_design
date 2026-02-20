@@ -43,9 +43,11 @@ export function Navigation() {
               {link.label}
             </Link>
           ))}
-          <Button size="sm" asChild className="rounded-full px-6 bg-[#495bf2]">
-            <Link href="/next-steps">I'm New</Link>
-          </Button>
+<Button size="sm" asChild className="rounded-full px-6 bg-[#495bf2]">
+  <a href="https://newlifecanton.com/visit/">
+    I'm New
+  </a>
+</Button>
         </div>
 
         {/* Mobile Nav */}
@@ -72,13 +74,15 @@ export function Navigation() {
                   </Link>
                 ))}
                 <div className="pt-6 border-t">
-                  <Button
-                    className="w-full rounded-full"
-                    asChild
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Link href="/next-steps">Plan Your Visit</Link>
-                  </Button>
+                <Button
+  className="w-full rounded-full"
+  asChild
+  onClick={() => setIsOpen(false)}
+>
+  <a href="https://newlifecanton.com/visit/">
+    Plan Your Visit
+  </a>
+</Button>
                 </div>
               </div>
             </SheetContent>

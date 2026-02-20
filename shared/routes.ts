@@ -168,7 +168,129 @@ export const api = {
         401: errorSchemas.unauthorized,
       },
     },
-  }
+  },
+
+  // === Resources ===
+  resources: {
+    list: {
+      method: "GET" as const,
+      path: "/api/resources" as const,
+      responses: {
+        200: z.object({
+          items: z.array(
+            z.object({
+              id: z.string(),
+              title: z.string(),
+              type: z.enum(["file", "link", "video"]),
+              category: z.string(),
+              url: z.string().optional(),
+              mediaId: z.number().optional(),
+              filename: z.string().optional(),
+              mime: z.string().optional(),
+              createdAt: z.string().optional(),
+              updatedAt: z.string().optional(),
+            })
+          ),
+          categories: z.array(z.string()).optional(),
+          favorites: z.array(z.string()).optional(),
+          canManage: z.boolean().optional(),
+        }),
+        401: errorSchemas.unauthorized,
+      },
+    },
+
+    create: {
+      method: "POST" as const,
+      path: "/api/resources" as const,
+      input: z.object({
+        title: z.string(),
+        type: z.enum(["file", "link", "video"]),
+        category: z.string(),
+        url: z.string().optional(),
+        mediaId: z.number().optional(),
+        filename: z.string().optional(),
+        mime: z.string().optional(),
+      }),
+      responses: {
+        201: z.object({
+          id: z.string(),
+          title: z.string(),
+          type: z.enum(["file", "link", "video"]),
+          category: z.string(),
+          url: z.string().optional(),
+          mediaId: z.number().optional(),
+          filename: z.string().optional(),
+          mime: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+        }),
+        401: errorSchemas.unauthorized,
+      },
+    },
+
+    update: {
+      method: "PUT" as const,
+      path: "/api/resources/:id" as const,
+      input: z.object({
+        title: z.string().optional(),
+        type: z.enum(["file", "link", "video"]).optional(),
+        category: z.string().optional(),
+        url: z.string().optional(),
+        mediaId: z.number().optional(),
+        filename: z.string().optional(),
+        mime: z.string().optional(),
+      }),
+      responses: {
+        200: z.object({
+          id: z.string(),
+          title: z.string(),
+          type: z.enum(["file", "link", "video"]),
+          category: z.string(),
+          url: z.string().optional(),
+          mediaId: z.number().optional(),
+          filename: z.string().optional(),
+          mime: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+        }),
+        404: errorSchemas.notFound,
+        401: errorSchemas.unauthorized,
+      },
+    },
+
+    delete: {
+      method: "DELETE" as const,
+      path: "/api/resources/:id" as const,
+      responses: {
+        204: z.void(),
+        404: errorSchemas.notFound,
+        401: errorSchemas.unauthorized,
+      },
+    },
+
+    bulkDelete: {
+      method: "POST" as const,
+      path: "/api/resources/bulk-delete" as const,
+      input: z.object({ ids: z.array(z.string()) }),
+      responses: {
+        200: z.object({ ok: z.boolean(), deleted: z.array(z.string()) }).passthrough(),
+        401: errorSchemas.unauthorized,
+      },
+    },
+
+    toggleFavorite: {
+      method: "POST" as const,
+      path: "/api/resources/:id/favorite" as const,
+      responses: {
+        200: z.object({
+          id: z.string(),
+          favorited: z.boolean(),
+          favorites: z.array(z.string()),
+        }),
+        401: errorSchemas.unauthorized,
+      },
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {

@@ -14,13 +14,21 @@ import { z } from "zod";
 import { Loader2, Plus, UserCheck, UserX, Shield, Clock, Users, Trash2 } from "lucide-react";
 import type { User } from "@shared/models/auth";
 import { wpApiUrl, wpHeaders } from "@/lib/wp";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const addUserSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  role: z.enum(["admin_leader"]).default("admin_leader"),
-});
+  role: z.enum([
+    "admin_leader",
+    "middleschoolboy",
+    "middleschoolgirl",
+    "highschoolboy",
+    "highschoolgirl",
+  ]).default("admin_leader"),
+  });
 
 type AddUserForm = z.infer<typeof addUserSchema>;
 
@@ -36,6 +44,15 @@ function roleBadge(role: string) {
       return <Badge variant="destructive" data-testid={`badge-role-denied`}><UserX className="w-3 h-3 mr-1" /> Denied</Badge>;
     default:
       return <Badge variant="outline">{role}</Badge>;
+      case "middleschoolboy":
+        return <Badge variant="secondary">Middle School Boys</Badge>;
+      case "middleschoolgirl":
+        return <Badge variant="secondary">Middle School Girls</Badge>;
+      case "highschoolboy":
+        return <Badge variant="secondary">High School Boys</Badge>;
+      case "highschoolgirl":
+        return <Badge variant="secondary">High School Girls</Badge>;
+        
   }
 }
 
@@ -184,7 +201,30 @@ export default function LeaderUsers() {
                     </FormItem>
                   )}
                 />
-                <input type="hidden" {...form.register("role")} />
+<FormField
+  control={form.control}
+  name="role"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Role</FormLabel>
+      <Select value={field.value} onValueChange={field.onChange}>
+        <FormControl>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a role" />
+          </SelectTrigger>
+        </FormControl>
+        <SelectContent>
+          <SelectItem value="admin_leader">Admin Leader</SelectItem>
+          <SelectItem value="middleschoolboy">Middle School Boys</SelectItem>
+          <SelectItem value="middleschoolgirl">Middle School Girls</SelectItem>
+          <SelectItem value="highschoolboy">High School Boys</SelectItem>
+          <SelectItem value="highschoolgirl">High School Girls</SelectItem>
+        </SelectContent>
+      </Select>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
                 <div className="pt-4 flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
                   <Button type="submit" disabled={createUser.isPending} data-testid="button-submit-add-user">

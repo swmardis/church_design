@@ -27,3 +27,36 @@ export function wpHeaders(extra: Record<string, string> = {}): HeadersInit {
     ...extra,
   };
 }
+
+export async function wpFetch<T = any>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> {
+  let url = wpApiUrl(path);
+
+  // Cache-bust all GET requests (and optionally others) to avoid browser/CF stale REST responses
+  const method = (options.method || "GET").toUpperCase();
+  if (method === "GET") {
+    url += (url.includes("?") ? "&" : "?") + `cb=${Date.now()}`;
+  }
+  
+  const res = await fetch(url, {
+    cache: "no-store",
+    credentials: "same-origin", // REQUIRED for WP auth cookies
+    ...options,
+    headers: {
+      Accept: "application/json",
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...wpHeaders(),
+      ...(options.headers || {}),
+    },
+  });
+  
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`WP REST ${res.status}: ${text || res.statusText}`);
+  }
+
+  if (res.status === 204) return undefined as any;
+  return (await res.json()) as T;
+}

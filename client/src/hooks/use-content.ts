@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl, type Section } from "@shared/routes";
 import { wpApiUrl, wpHeaders } from "@/lib/wp";
+import { wpFetch } from "@/lib/wp";
+
 
 // === Content Hooks ===
 
@@ -9,11 +11,16 @@ export function usePageContent(pageSlug: string) {
     queryKey: [api.content.getPage.path, pageSlug],
     queryFn: async () => {
       const url = buildUrl(api.content.getPage.path, { page: pageSlug });
-      const res = await fetch(wpApiUrl(url), { headers: wpHeaders() });
-      if (res.status === 404) return []; // Return empty array if not found, let UI handle defaults
-      if (!res.ok) throw new Error("Failed to fetch page content");
-      return api.content.getPage.responses[200].parse(await res.json());
-    },
+      try {
+        const data = await wpFetch(url);
+        return api.content.getPage.responses[200].parse(data);
+      } catch (e: any) {
+        // WP returns 404 text; treat missing content as empty array
+        const msg = String(e?.message || "");
+        if (msg.includes("WP REST 404")) return [];
+        throw e;
+      }
+          },
   });
 }
 

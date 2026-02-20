@@ -1,24 +1,69 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, FileText, Calendar, Image, Settings, LogOut, Home, Users, Clock, ShieldX, Menu } from "lucide-react";
+import {
+  LayoutDashboard,
+  FileText,
+  Calendar,
+  Image,
+  Settings,
+  LogOut,
+  Home,
+  Users,
+  Clock,
+  ShieldX,
+  Menu,
+  Folder,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BackToTop } from "@/components/BackToTop";
 
 export function LeaderLayout({ children }: { children: React.ReactNode }) {
   const { user, logout, isLoading } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const ADMIN_ROLE = "admin_leader";
+  const READ_ONLY_ROLES = ["middleschoolboy", "middleschoolgirl", "highschoolboy", "highschoolgirl"];
+
+  const isAdmin = user?.role === ADMIN_ROLE;
+  const isReadOnly = !!user?.role && READ_ONLY_ROLES.includes(user.role);
+
+  const readOnlyAllowed = useMemo(() => ["/leader/dashboard", "/leader/resources"], []);
+
+  // ✅ ALL redirects happen in effects so hooks order is stable.
+  useEffect(() => {
+    if (isLoading) return;
+
+    // Not logged in -> go to login
+    if (!user) {
+      window.location.href = "/admin/login?cb=" + Date.now();
+      return;
+    }
+
+    // Pending/Denied can stay in UI (no redirect here)
+    if (user.role === "pending" || user.role === "denied") return;
+
+    // Must be admin or read-only
+    if (!isAdmin && !isReadOnly) {
+      window.location.href = "/?cb=" + Date.now();
+      return;
+    }
+
+    // Read-only: force allowed pages only
+    if (isReadOnly) {
+      const allowed = readOnlyAllowed.some((p) => location.startsWith(p));
+      if (!allowed) setLocation("/leader/dashboard");
+    }
+  }, [isLoading, user, isAdmin, isReadOnly, location, setLocation, readOnlyAllowed]);
+
+  // Render gates AFTER hooks
   if (isLoading) return null;
 
-  if (!user) {
-    window.location.href = "/admin/login";
-    return null;
-  }
+  if (!user) return null;
 
   if (user.role === "pending") {
     return (
@@ -68,34 +113,39 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (user.role !== "admin_leader") {
-    window.location.href = "/";
-    return null;
-  }
+  // If not admin/read-only, effect will redirect; render nothing.
+  if (!isAdmin && !isReadOnly) return null;
 
-  const navItems = [
-    { href: "/leader/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/leader/home", icon: FileText, label: "Home" },
-    { href: "/leader/about", icon: FileText, label: "About" },
-    { href: "/leader/next-steps", icon: FileText, label: "Next Steps" },
-    { href: "/leader/contact", icon: FileText, label: "Contact" },
-    { href: "/leader/events", icon: Calendar, label: "Events" },
-    { href: "/leader/media", icon: Image, label: "Media" },
-    { href: "/leader/users", icon: Users, label: "Users" },
-    { href: "/leader/settings", icon: Settings, label: "Settings" },
-  ];
+  const navItems = isAdmin
+    ? [
+        { href: "/leader/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { href: "/leader/home", icon: FileText, label: "Home" },
+        { href: "/leader/about", icon: FileText, label: "About" },
+        { href: "/leader/next-steps", icon: FileText, label: "Next Steps" },
+        { href: "/leader/contact", icon: FileText, label: "Contact" },
+        { href: "/leader/events", icon: Calendar, label: "Events" },
+        { href: "/leader/media", icon: Image, label: "Media" },
+        { href: "/leader/resources", icon: Folder, label: "Resources" },
+        { href: "/leader/users", icon: Users, label: "Users" },
+        { href: "/leader/settings", icon: Settings, label: "Settings" },
+      ]
+    : [
+        { href: "/leader/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { href: "/leader/resources", icon: Folder, label: "Resources" },
+      ];
 
   const SidebarNav = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => (
           <Link key={item.href} href={item.href} onClick={onNavigate}>
-            <div className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-              location === item.href 
-                ? "bg-primary/10 text-primary" 
-                : "text-slate-600 hover-elevate"
-            )} data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
+            <div
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === item.href ? "bg-primary/10 text-primary" : "text-slate-600 hover-elevate"
+              )}
+              data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+            >
               <item.icon className="w-5 h-5" />
               {item.label}
             </div>
@@ -107,13 +157,15 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
         <div className="px-3 py-2 text-xs text-muted-foreground truncate">
           {user.firstName} {user.lastName}
         </div>
+
         <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600" asChild onClick={onNavigate}>
           <Link href="/">
             <Home className="w-5 h-5" /> View Site
           </Link>
         </Button>
-        <Button 
-          variant="ghost" 
+
+        <Button
+          variant="ghost"
           className="w-full justify-start gap-3 text-destructive"
           onClick={() => logout()}
           data-testid="button-logout"
@@ -140,6 +192,7 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
           <Link href="/leader/dashboard" className="font-display text-lg font-bold text-primary">
             Leader<span className="text-foreground">Portal</span>
           </Link>
+
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" data-testid="button-mobile-menu">
@@ -148,7 +201,9 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0">
               <div className="p-6 border-b">
-                <span className="font-display text-xl font-bold text-primary">Leader<span className="text-foreground">Portal</span></span>
+                <span className="font-display text-xl font-bold text-primary">
+                  Leader<span className="text-foreground">Portal</span>
+                </span>
               </div>
               <div className="flex flex-col h-[calc(100%-73px)]">
                 <SidebarNav onNavigate={() => setMobileOpen(false)} />
@@ -158,9 +213,7 @@ export function LeaderLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <main className="flex-1 md:ml-64 min-h-screen pt-14 md:pt-0">
-        {children}
-      </main>
+      <main className="flex-1 md:ml-64 min-h-screen pt-14 md:pt-0">{children}</main>
       <BackToTop />
     </div>
   );

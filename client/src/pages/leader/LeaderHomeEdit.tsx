@@ -13,6 +13,33 @@ import { Loader2, Plus, Trash2, GripVertical } from "lucide-react";
 import { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+type HeroFormValues = {
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  primaryButtonText: string;
+  primaryButtonUrl: string;
+  secondaryButtonText: string;
+  secondaryButtonUrl: string;
+  useLogo?: boolean;
+  logoImage?: string;
+  logoSize?: number;
+};
+
+type ScheduleTime = { label: string; time: string };
+type ScheduleFormValues = {
+  title: string;
+  description: string;
+  image: string;
+  times: ScheduleTime[];
+};
+
+type ServiceTypeItem = { title: string; description: string; image: string };
+type ServiceTypesFormValues = {
+  items: ServiceTypeItem[];
+};
+
+
 export default function LeaderHomeEdit() {
   const { data: sections, isLoading } = usePageContent("home");
   const updateSection = useUpdateSection();
@@ -28,8 +55,12 @@ export default function LeaderHomeEdit() {
     title: "", description: "", image: "", times: [] 
   });
   
-  const featured = getSectionContent(sections, "featured", { cards: [] });
-  const serviceTypes = getSectionContent(sections, "service_types", { items: [] });
+  const featured = getSectionContent(
+    sections,
+    "featured",
+    getSectionContent(sections, "featured_cards", { cards: [] })
+  );
+    const serviceTypes = getSectionContent(sections, "service_types", { items: [] });
 
   if (isLoading) return <div className="flex justify-center p-20"><Loader2 className="w-8 h-8 animate-spin" /></div>;
 
@@ -51,7 +82,7 @@ export default function LeaderHomeEdit() {
         <TabsContent value="hero" className="mt-6">
           <HeroForm 
             defaultValues={hero} 
-            onSubmit={(data) => updateSection.mutate({ pageSlug: "home", sectionKey: "hero", content: data }, {
+            onSubmit={(data: HeroFormValues) => updateSection.mutate({ pageSlug: "home", sectionKey: "hero", content: data }, {
               onSuccess: () => toast({ title: "Saved", description: "Hero section updated." })
             })}
           />
@@ -60,7 +91,7 @@ export default function LeaderHomeEdit() {
         <TabsContent value="schedule" className="mt-6">
           <ScheduleForm 
             defaultValues={schedule}
-            onSubmit={(data) => updateSection.mutate({ pageSlug: "home", sectionKey: "schedule", content: data }, {
+            onSubmit={(data: ScheduleFormValues) => updateSection.mutate({ pageSlug: "home", sectionKey: "schedule", content: data }, {
               onSuccess: () => toast({ title: "Saved", description: "Schedule updated." })
             })}
           />
@@ -69,7 +100,7 @@ export default function LeaderHomeEdit() {
         <TabsContent value="services" className="mt-6">
           <ServiceTypesForm
             defaultValues={serviceTypes}
-            onSubmit={(data) => updateSection.mutate({ pageSlug: "home", sectionKey: "service_types", content: data }, {
+            onSubmit={(data: ServiceTypesFormValues) => updateSection.mutate({ pageSlug: "home", sectionKey: "service_types", content: data }, {
               onSuccess: () => toast({ title: "Saved", description: "Service types updated." })
             })}
           />
@@ -78,10 +109,10 @@ export default function LeaderHomeEdit() {
         <TabsContent value="featured" className="mt-6">
           <FeaturedForm 
             defaultValues={featured}
-            onSubmit={(data) => updateSection.mutate({ pageSlug: "home", sectionKey: "featured", content: data }, {
+            onSubmit={(data: FeaturedFormValues) => updateSection.mutate({ pageSlug: "home", sectionKey: "featured_cards", content: data }, {
               onSuccess: () => toast({ title: "Saved", description: "Featured cards updated." })
             })}
-          />
+                      />
         </TabsContent>
       </Tabs>
     </div>
@@ -177,17 +208,17 @@ function HeroForm({ defaultValues, onSubmit }: any) {
 }
 
 function ScheduleForm({ defaultValues, onSubmit }: any) {
-  const form = useForm({ defaultValues });
+  const form = useForm<ScheduleFormValues>({ defaultValues });
   useEffect(() => { form.reset(defaultValues); }, [defaultValues, form]);
 
-  const times = form.watch("times") || [];
+  const times = form.watch("times") ?? [];
   const addTime = () => {
     const current = form.getValues("times") || [];
     form.setValue("times", [...current, { label: "", time: "" }]);
   };
   const removeTime = (idx: number) => {
     const current = form.getValues("times") || [];
-    form.setValue("times", current.filter((_, i) => i !== idx));
+    form.setValue("times", current.filter((_: ScheduleTime, i: number) => i !== idx));
   };
 
   return (
@@ -211,7 +242,7 @@ function ScheduleForm({ defaultValues, onSubmit }: any) {
                 <FormLabel>Service Times</FormLabel>
                 <Button type="button" variant="outline" size="sm" onClick={addTime}><Plus className="w-4 h-4 mr-2"/> Add Time</Button>
               </div>
-              {times.map((_, index) => (
+              {times.map((_, index: number) => (
                 <div key={index} className="flex gap-4 items-end bg-muted/20 p-3 rounded-lg border">
                   <FormField control={form.control} name={`times.${index}.time`} render={({ field }) => (
                     <FormItem className="flex-1"><FormLabel className="text-xs">Time</FormLabel><FormControl><Input {...field} placeholder="9:00 AM" /></FormControl></FormItem>
@@ -233,17 +264,17 @@ function ScheduleForm({ defaultValues, onSubmit }: any) {
 }
 
 function ServiceTypesForm({ defaultValues, onSubmit }: any) {
-  const form = useForm({ defaultValues });
+  const form = useForm<ServiceTypesFormValues>({ defaultValues });
   useEffect(() => { form.reset(defaultValues); }, [defaultValues, form]);
 
-  const items = form.watch("items") || [];
+  const items = form.watch("items") ?? [];
   const addItem = () => {
     const current = form.getValues("items") || [];
     form.setValue("items", [...current, { title: "", description: "", image: "" }]);
   };
   const removeItem = (idx: number) => {
     const current = form.getValues("items") || [];
-    form.setValue("items", current.filter((_, i) => i !== idx));
+    form.setValue("items", current.filter((_: ServiceTypeItem, i: number) => i !== idx));
   };
 
   return (
@@ -255,7 +286,7 @@ function ServiceTypesForm({ defaultValues, onSubmit }: any) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {items.map((_, index) => (
+          {items.map((_, index: number) => (
               <div key={index} className="border p-4 rounded-xl space-y-4 bg-muted/10 relative">
                 <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive" onClick={() => removeItem(index)}><Trash2 className="w-4 h-4" /></Button>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -282,33 +313,112 @@ function ServiceTypesForm({ defaultValues, onSubmit }: any) {
   );
 }
 
-function FeaturedForm({ defaultValues, onSubmit }: any) {
-  // Simplified version reuse similar pattern
-  const form = useForm({ defaultValues });
-  useEffect(() => { form.reset(defaultValues); }, [defaultValues, form]);
-  
-  const cards = form.watch("cards") || [];
-  
+type FeaturedCard = {
+  title: string;
+  description?: string;
+  link: string;
+};
+
+type FeaturedFormValues = {
+  cards: FeaturedCard[];
+};
+
+function FeaturedForm({
+  defaultValues,
+  onSubmit,
+}: {
+  defaultValues: FeaturedFormValues;
+  onSubmit: (data: FeaturedFormValues) => void;
+}) {
+  const form = useForm<FeaturedFormValues>({
+    defaultValues: {
+      cards: Array.isArray(defaultValues?.cards) ? defaultValues.cards : [],
+    },
+  });
+
+  useEffect(() => {
+    form.reset({
+      cards: Array.isArray(defaultValues?.cards) ? defaultValues.cards : [],
+    });
+  }, [defaultValues, form]);
+
+  const cards = form.watch("cards") ?? [];
+
+  const addCard = () => {
+    const next: FeaturedCard[] = [...cards, { title: "", description: "", link: "" }];
+    form.setValue("cards", next, { shouldDirty: true, shouldTouch: true });
+  };
+
+  const removeCard = (index: number) => {
+    const next: FeaturedCard[] = cards.filter((_, i) => i !== index);
+    form.setValue("cards", next, { shouldDirty: true, shouldTouch: true });
+  };
+
   return (
     <Card>
-      <CardHeader><CardTitle>Featured Cards</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Featured Cards</CardTitle>
+      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-             {cards.map((_, index) => (
-                <div key={index} className="border p-4 rounded-lg bg-muted/20 space-y-3">
-                  <FormField control={form.control} name={`cards.${index}.title`} render={({ field }) => (
-                    <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                  )} />
-                  <FormField control={form.control} name={`cards.${index}.description`} render={({ field }) => (
-                    <FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                  )} />
-                   <FormField control={form.control} name={`cards.${index}.link`} render={({ field }) => (
-                    <FormItem><FormLabel>Link URL</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                  )} />
+            {cards.map((_, index: number) => (
+              <div key={index} className="border p-4 rounded-lg bg-muted/20 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="font-semibold">Card {index + 1}</div>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => removeCard(index)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
-             ))}
-             <Button type="submit">Save Changes</Button>
+
+                <FormField
+                  control={form.control}
+                  name={`cards.${index}.title`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`cards.${index}.description`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`cards.${index}.link`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Link URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="/next-steps" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ))}
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button type="button" variant="outline" onClick={addCard}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Card
+              </Button>
+              <Button type="submit">Save Changes</Button>
+            </div>
           </form>
         </Form>
       </CardContent>

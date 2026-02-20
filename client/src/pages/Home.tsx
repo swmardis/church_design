@@ -45,14 +45,18 @@ export default function Home() {
     ]
   });
 
-  const featured = getSectionContent(sections, "featured", {
-    cards: [
-      { title: "I'm New Here", description: "First time? We'd love to meet you.", link: "/next-steps" },
-      { title: "Connect Groups", description: "Find community and grow together.", link: "/events" },
-      { title: "Prayer Requests", description: "How can we pray for you today?", link: "/contact" }
-    ]
-  });
-
+  const featured = getSectionContent(
+    sections,
+    "featured",
+    getSectionContent(sections, "featured_cards", {
+      cards: [
+        { title: "I'm New Here", description: "First time? We'd love to meet you.", link: "/next-steps" },
+        { title: "Connect Groups", description: "Find community and grow together.", link: "/events" },
+        { title: "Prayer Requests", description: "How can we pray for you today?", link: "/contact" }
+      ]
+    })
+  );
+  
   const serviceTypes = getSectionContent(sections, "service_types", { items: [] });
 
   // Get upcoming 3 events
@@ -81,12 +85,12 @@ export default function Home() {
           <div className="animate-in-up">
             {hero.useLogo && hero.logoImage ? (
               <div className="mb-6 flex justify-center">
-                <img
-                  src={hero.logoImage}
-                  alt="Logo"
-                  className="w-auto object-contain drop-shadow-lg"
-                  style={{ maxHeight: `${Math.round(((hero.logoSize ?? 50) / 100) * 400)}px` }}
-                />
+<img
+  src={hero.logoImage}
+  alt="Logo"
+  className="w-auto object-contain drop-shadow-lg max-h-[220px] sm:max-h-[320px] md:max-h-[400px]"
+  style={{ transform: `scale(${(hero.logoSize ?? 50) / 100})`, transformOrigin: "center" }}
+/>
               </div>
             ) : (
               <h1 className="font-display font-bold text-5xl md:text-7xl lg:text-8xl text-white mb-6 drop-shadow-lg leading-tight text-balance">
@@ -108,8 +112,8 @@ export default function Home() {
         </div>
       </section>
       {/* Featured Cards */}
-      <section className="relative -mt-24 z-20 pb-20">
-        <div className="container mx-auto px-4">
+      <section className="relative -mt-12 sm:-mt-20 md:-mt-24 z-20 pb-16 sm:pb-20">
+      <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featured.cards.map((card: any, i: number) => (
               <Link key={i} href={card.link}>

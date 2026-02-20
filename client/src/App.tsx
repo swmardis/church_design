@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -24,6 +25,7 @@ import LeaderNextSteps from "@/pages/leader/LeaderNextSteps";
 import LeaderContact from "@/pages/leader/LeaderContact";
 import LeaderSettings from "@/pages/leader/LeaderSettings";
 import LeaderUsers from "@/pages/leader/LeaderUsers";
+import LeaderResources from "@/pages/leader/LeaderResources";
 import { LeaderLayout } from "@/components/LeaderLayout";
 import { BackToTop } from "@/components/BackToTop";
 
@@ -42,6 +44,13 @@ function Router() {
   const [location] = useLocation();
   const isLeaderRoute = location.startsWith("/leader") || location.startsWith("/admin");
 
+  useEffect(() => {
+    // If using hash anchors, let the browser handle them
+    if (location.includes("#")) return;
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location]);
+
   if (isLeaderRoute) {
     return (
       <LeaderLayout>
@@ -56,6 +65,7 @@ function Router() {
           <Route path="/leader/contact" component={LeaderContact} />
           <Route path="/leader/settings" component={LeaderSettings} />
           <Route path="/leader/users" component={LeaderUsers} />
+          <Route path="/leader/resources" component={LeaderResources} />
           <Route component={NotFound} />
         </Switch>
       </LeaderLayout>

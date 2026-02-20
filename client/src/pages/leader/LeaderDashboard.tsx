@@ -13,10 +13,12 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 
+
 // No hardcoded defaults - all shortcuts come from the database
 
 export default function LeaderDashboard() {
   const { user } = useAuth();
+  const isAdmin = user?.role === "admin_leader";
   const { data: customShortcuts, isLoading } = useShortcuts();
   const createShortcut = useCreateShortcut();
   const deleteShortcut = useDeleteShortcut();
@@ -42,15 +44,17 @@ export default function LeaderDashboard() {
           <p className="text-muted-foreground">Manage your church website and resources.</p>
         </div>
         <div className="flex gap-3">
-          <AddShortcutDialog 
-            open={isDialogOpen} 
-            onOpenChange={setIsDialogOpen}
-            onSubmit={async (data) => {
-              await createShortcut.mutateAsync(data);
-              setIsDialogOpen(false);
-              toast({ title: "Success", description: "Shortcut added to dashboard." });
-            }}
-          />
+        {isAdmin && (
+  <AddShortcutDialog 
+    open={isDialogOpen} 
+    onOpenChange={setIsDialogOpen}
+    onSubmit={async (data: any) => {
+      await createShortcut.mutateAsync(data);
+      setIsDialogOpen(false);
+      toast({ title: "Success", description: "Shortcut added to dashboard." });
+    }}
+      />
+)}
           <Button asChild variant="outline">
             <Link href="/">View Live Site <ExternalLink className="ml-2 w-4 h-4" /></Link>
           </Button>
@@ -66,8 +70,8 @@ export default function LeaderDashboard() {
           return (
             <Link key={idx} href={item.href}>
               <Card className="hover:shadow-lg transition-all cursor-pointer border-border/60 hover:border-primary/50 group h-full relative">
-                {item.id && (
-                  <button
+              {isAdmin && item.id && (
+                <button
                     onClick={(e) => handleDelete(e, item.id)}
                     className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive rounded-full transition-all z-10"
                   >
@@ -134,7 +138,7 @@ function AddShortcutDialog({ open, onOpenChange, onSubmit }: any) {
         <DialogHeader>
           <DialogTitle>Add Dashboard Shortcut</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit((data) => {
+        <form onSubmit={handleSubmit((data: any) => {
           // Add default styling for new shortcuts
           onSubmit({ ...data, color: "text-gray-500", bgColor: "bg-gray-100" });
           reset();
